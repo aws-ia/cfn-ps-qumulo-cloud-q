@@ -187,7 +187,7 @@ Parameters:
       The Quick Start bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a 
       hyphen (-).
-    Default: aws-quickstart
+    Default: aws-ia-us-east-1
     Description:
       'Name of the S3 bucket for your copy of the Quick Start assets. 
       Keep the default name unless you are customizing the template. 
@@ -211,7 +211,7 @@ Parameters:
     ConstraintDescription:
       The Quick Start S3 key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slashes (/).
-    Default: quickstart-qumulo-cloud-q/
+    Default: cfn-ps-qumulo-cloud-q/
     Description:
       'S3 key prefix that is used to simulate a folder for your copy of the 
       Quick Start assets. Keep the default prefix unless you are customizing 
@@ -564,7 +564,7 @@ Parameters:
 
 Conditions:
 
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia-us-east-1']
   
   R53: !Not
     - !Equals
