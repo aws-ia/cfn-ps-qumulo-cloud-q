@@ -1,6 +1,6 @@
 project:
   owner: quickstart-eng@amazon.com
-  name: quickstart-qumulo-cloud-q
+  name: cfn-ps-qumulo-cloud-q
   package_lambda: false
   regions:
   - us-east-1
