@@ -1,3 +1,5 @@
 // Include details about any licenses and how to sign up. Provide links as appropriate.
 
 There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
+
+Before you deploy the {partner-product-short-name} Partner Solution, subscribe to a Qumulo Amazon Machine Image (AMI) in the AWS Marketplace. See the link:#_subscribe_to_a_qumulo_marketplace_ami[Subscribe to a Qumulo Marketplace AMI] section in this guide.

@@ -1,3 +1,16 @@
 //Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+
+=== Subscribe to a Qumulo Marketplace AMI
+This Partner Solution supports all Qumulo AWS Marketplace offerings. The 1-TB and 12-TB offerings are free for 30 days.  
+
+. Go to the https://aws.amazon.com/marketplace[AWS Marketplace^].
+
+. In the search bar, enter `Qumulo`. 
+
+. Choose the offering with the appropriate capacity for your configuration and deployment Region.
+
+. Choose *Continue to Subscribe* on the upper right. The subscription processes within a few minutes.
+
+. If you have a private offer, accept the offer by clicking the link you receive in an email. For example, the https://aws.amazon.com/marketplace/pp/prodview-jp4qun3yw5hn4[Qumulo Customizable File Storage Node^] offering (unless you choose 320 TiB per EC2 instance) requires a private offer.
