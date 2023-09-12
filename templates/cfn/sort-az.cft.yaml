@@ -90,7 +90,7 @@ Resources:
         Fn::GetAtt:
           - LambdaExecutionRole
           - Arn
-      Runtime: python3.6
+      Runtime: python3.9
       Timeout: 30
       Code:
         ZipFile: "import json\nimport boto3\nimport cfnresponse      \nimport logging\n \ndef handler(event, context):\n  logger = logging.getLogger()\n  logger.setLevel(logging.INFO)\n          \n  response_data\
