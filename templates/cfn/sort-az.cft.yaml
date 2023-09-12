@@ -93,7 +93,7 @@ Resources:
       Runtime: python3.6
       Timeout: 30
       Code:
-        ZipFile: "import json\nimport boto3\nimport cfnresponse      \nimport logging\n\ndef handler(event, context):\n  logger = logging.getLogger()\n  logger.setLevel(logging.INFO)\n          \n  response_data\
+        ZipFile: "import json\nimport boto3\nimport cfnresponse      \nimport logging\n \ndef handler(event, context):\n  logger = logging.getLogger()\n  logger.setLevel(logging.INFO)\n          \n  response_data\
           \ = {}\n  response_status = cfnresponse.FAILED\n  \n  logger.info('Received event: {}'.format(json.dumps(event)))\n  \n  if event['RequestType'] == 'Delete':\n    response_status = cfnresponse.SUCCESS\n\
           \    cfnresponse.send(event, context, response_status, response_data)\n\n  try:\n    ec2=boto3.client('ec2')\n    ssm=boto3.client('ssm')\n  except Exception as e:\n    logger.info('boto3.client\
           \ failure: {}'.format(e))\n    cfnresponse.send(event, context, response_status, response_data)\n  \n  stack_name = event['ResourceProperties']['StackName']\n  subnetid_list = event['ResourceProperties']['SubnetIdList']\n\

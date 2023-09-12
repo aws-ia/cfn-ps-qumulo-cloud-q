@@ -852,3 +852,9 @@ Outputs:
       Fn::GetAtt:
         - QSTACK
         - Outputs.QumuloKnowledgeBase
+  EnvType:
+    Value:
+      Ref: EnvType
+  QDr:
+    Value:
+      Ref: QDr
