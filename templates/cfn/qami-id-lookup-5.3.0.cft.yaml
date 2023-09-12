@@ -1,29 +1,5 @@
-AWSTemplateFormatVersion: "2010-09-09"
-
-#MIT License
-
-#Copyright (c) 2021 Qumulo, Inc.
-
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the Software), to deal 
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is 
-# furnished to do so, subject to the following conditions:
-
-#The above copyright notice and this permission notice shall be included in all 
-#copies or substantial portions of the Software.
-
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
-#SOFTWARE.
-
-Description: This template looks up the AMI-ID for the Qumulo EC2 instances based on AWS region and marketplace product type
-
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template looks up the AMI-ID for the Qumulo EC2 instances based on AWS region and marketplace product type (qs-1ui8pllug)
 Metadata:
   cfn-lint:
     config:
@@ -33,11 +9,9 @@ Metadata:
         - W9003
         - W9004
         - W9006
-
 Parameters:
   MarketPlaceType:
     Type: String
-
 Mappings:
   RegionMap:
     us-east-1:
@@ -216,16 +190,19 @@ Mappings:
       270TB: ami-0b75a644ffad780d9
       809TB: ami-02ecd280fca6ea8e2
       Custom: ami-0e7faebf7d6207a7c
-
 Conditions:
   Never:
-    !Equals [ A, B ]
-
+    Fn::Equals:
+      - A
+      - B
 Resources:
   NonResource:
     Type: Custom::NonResource
     Condition: Never
-
 Outputs:
   AmiId:
-    Value: !FindInMap [RegionMap, !Ref "AWS::Region", !Ref MarketPlaceType]
+    Value:
+      Fn::FindInMap:
+        - RegionMap
+        - Ref: AWS::Region
+        - Ref: MarketPlaceType
