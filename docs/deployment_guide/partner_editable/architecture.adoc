@@ -7,22 +7,26 @@ AWS Cloud.
 
 [#architecture1]
 .Partner Solution architecture for {partner-product-short-name} on AWS
-image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
+image::../docs/deployment_guide/images/qumulo-cloud-q-architecture-diagram.png[Architecture, 90%]
 
-As shown in <<architecture1>>, this Partner Solution sets up the following:
+As shown in <<architecture1>>, the Partner Solution sets up the following:
 
-* A highly available architecture that spans two Availability Zones.*
-* A virtual private cloud (VPC) configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
-* In the public subnets:
-** Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
-** A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in public and private subnets.*
-* In the private subnets:
-** <item>.
-** <item>.
-// Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
-* <describe any additional components>.
+* Two Availability Zones: one for the Qumulo cluster and another that you could use for a https://qumulo.com/solution/recover-q/[disaster recovery Qumulo cluster^].*
+* A VPC configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.*
 
-[.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
+* In the public subnet, a managed network address translation (NAT) gateway to allow outbound internet access for resources in the private subnet.
+
+* In the private subnet:
+** A cluster of Amazon Elastic Compute Cloud (Amazon EC2) instances that run the Qumulo Core software. (Qumulo uses the term _node_ instead of _instance_.)
+** Amazon Elastic Block Store (Amazon EBS) volumes, which store the files for the Qumulo cluster.
+** A provisioner EC2 instance (node), which automatically stops running after provisioning the Qumulo cluster. It automatically restarts during stack updates.
+** (Optional) An Amazon Route 53 hosted zone to configure DNS A records for the cluster.
+
+* AWS Key Management Service (AWS KMS) to use a customer managed key for encryption of EBS volumes.
+* AWS Secrets Manager to store credentials.
+* AWS Identity and Access Management (IAM) to manage roles.
+* Amazon CloudWatch to log metrics for the Qumulo cluster and access a CloudWatch dashboard for the cluster.
+* Amazon Simple Notification Service (Amazon SNS) to send alerts for EBS volume anomalies and EC2-instance recovery events.
+* AWS Systems Manager for monitoring and storing the Qumulo cluster's provisioning state.
+* Amazon S3 for populating content on the Qumulo cluster.
+* AWS Lambda to collect metrics for the Qumulo cluster and monitor EBS volume health. (Qumulo refers to Lambda as Sidecar.)

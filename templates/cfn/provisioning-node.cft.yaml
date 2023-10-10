@@ -1,0 +1,429 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+# MIT License
+#
+# Copyright (c) 2021 Qumulo, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal 
+# in the Software without restriction, including without limitation the rights 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+# copies of the Software, and to permit persons to whom the Software is 
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all 
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+# SOFTWARE.
+
+Description: This template instantiates an EC2 instance for configuration of the Qumulo Cluster and is then shutdown.  Floating IPs, Sidecar role and permissions, EBS Volume Tags, and CMK Policy management are all configured. (qs-1s6n2i67p)
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W2506
+        - W9001
+        - W9002
+        - W9003
+        - W9004
+        - W9006
+        
+Parameters:
+  ProvisioningServerAMI:
+    Description: "AWS Linux Server AMI"
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  SideCarProv:
+    Type: String
+  KeyName:
+    Type: String
+  Region:
+    Type: String
+  PrivateSubnetId:
+    Type: String
+  PrivateSubnetCidr:
+    Type: String
+  NumberAZs:
+    Type: String
+  Node1IP:
+    Type: String
+  NodeIPs:
+    Type: String
+  MaxNodesDown:
+    Type: String
+  ModOverness:
+    Type: String
+  FloatIPs:
+    Type: String
+  ClusterPwd:
+    Type: String
+  VPCID:
+    Type: String
+  SideCarSecretsArn:
+    Type: String
+  ClusterSecretsArn:
+    Type: String
+  SoftwareSecretsArn:
+    Type: String
+  CMK:
+    Type: String
+  TopStackName:
+    Type: String
+  BucketName:
+    Type: String
+  BucketRegion:
+    Type: String    
+  KeyPrefix:
+    Type: String 
+  InstanceIDs: 
+    Type: String
+  QStackName:
+    Type: String
+  QClusterName:
+    Type: String
+  QClusterVersion:
+    Type: String
+  TermProtection:
+    Type: String
+  QPermissionsBoundary:
+    Type: String
+  RequireIMDSv2:
+    Type: String
+  FlashType:
+    Type: String      
+  FlashTput:
+    Type: String
+  FlashIops:
+    Type: String        
+
+Conditions:
+  ProvBoundary: !Not
+    - !Equals
+      - !Ref QPermissionsBoundary
+      - ""
+
+  ProvCMK: !Not
+    - !Equals
+      - !Ref CMK
+      - ""
+
+  ProvSingleAZ: !Equals
+    - !Ref NumberAZs
+    - "1"
+
+  StrictIMDSv2: !Equals
+    - !Ref RequireIMDSv2
+    - "YES"
+
+Resources:
+  ProvisionerSG:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable ports for Provisioning Management of Qumulo'
+      VpcId: !Ref VPCID
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Outbound traffic
+          FromPort: 0
+          IpProtocol: '-1'
+          ToPort: 0
+      SecurityGroupIngress:
+        - CidrIp: !Ref PrivateSubnetCidr
+          Description: 'SSH access for provisioning instance'
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+        - CidrIp: !Ref PrivateSubnetCidr
+          Description: 'Cluster access to ngnix'
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+        - CidrIp: !Ref PrivateSubnetCidr
+          Description: 'Cluster access to ngnix'
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+
+  ProvisionerRole:
+    Type: 'AWS::IAM::Role'
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      PermissionsBoundary: !If [ProvBoundary, !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${QPermissionsBoundary}", !Ref "AWS::NoValue"]      
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/SecretsManagerReadWrite"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      Policies:
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:ListObject"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}/*"
+                  - !Sub "arn:${AWS::Partition}:s3:::${BucketName}"                 
+        - PolicyName: Provisioner-EC2-Lambda-SSM
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:SetStackPolicy"
+                  - "cloudformation:UpdateTerminationProtection"
+                  - "cloudformation:DescribeStacks"                  
+                  - "cloudformation:DescribeStackResource"
+                  - "cloudformation:DescribeStackResources"                  
+                  - "ec2:DeleteTags"
+                  - "ec2:CreateTags"
+                  - "ec2:DescribeVolumes"
+                  - "ec2:DescribeInstances"
+                  - "ec2:ModifyInstanceAttribute"
+                  - "ec2:ModifyInstanceMetadataOptions"                  
+                  - "ec2:ModifyVolume"                  
+                  - "lambda:ListFunctions"
+                  - "lambda:GetFunction"
+                  - "lambda:ListTags"
+                  - "ssm:ListInstanceAssociations"
+                  - "ssm:GetParameter"
+                  - "ssm:PutParameter"
+                  - "ssm:UpdateInstanceInformation"
+                  - "kms:Decrypt"                  
+                Resource: "*"
+        - PolicyName: Provisioner-KMSPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: !If [ProvCMK, Allow, Deny]
+                Action:                   
+                  - "kms:PutKeyPolicy"
+                  - "kms:GetKeyPolicy"
+                Resource: !If [ProvCMK, !Sub "arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${CMK}", "*"]
+
+
+  ProvisionerProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref ProvisionerRole
+
+  CreationVersionSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/creation-version"       
+      Value: "null"
+      Type: String
+
+  InstalledVersionSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/installed-version"       
+      Value: "null"
+      Type: String
+
+  InstanceIDsSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/instance-ids"       
+      Value: "null"
+      Type: String
+
+  NodeIPsSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/node-ips"       
+      Value: "null"
+      Type: String
+
+  FloatIPsSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/float-ips"       
+      Value: "null"
+      Type: String
+
+  UuidSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/uuid"       
+      Value: "null"
+      Type: String
+
+  LastRunStatusSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/last-run-status"       
+      Value: "null"
+      Type: String
+
+  SideCarProvisionedSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/sidecar-provisioned"       
+      Value: "null"
+      Type: String
+
+  CMKPolicyModifiedSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/cmk-policy-modified"       
+      Value: "null"
+      Type: String
+
+  TerminationProtectionSSM: 
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/termination-protection"       
+      Value: "null"
+      Type: String      
+
+  CreationNumberAZsSSM: 
+    Type: AWS::SSM::Parameter
+    Condition: ProvSingleAZ
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/creation-number-AZs"       
+      Value: "null"
+      Type: String
+
+  MaxNodesDownSSM: 
+    Type: AWS::SSM::Parameter
+    Condition: ProvSingleAZ
+    Properties:
+      Name: !Sub "/qumulo/${TopStackName}/max-nodes-down"       
+      Value: "null"
+      Type: String
+
+  ProvisioningNodeLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Ref AWS::StackName
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpEndpoint: enabled
+          HttpPutResponseHopLimit: 3
+          HttpTokens: !If [StrictIMDSv2, required, optional]
+
+  ProvisioningNode:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ""
+            - - !Ref "AWS::StackName"
+              - " - Qumulo Provisioning Node"
+      ImageId: !Ref ProvisioningServerAMI
+      InstanceType: m5.large
+      InstanceInitiatedShutdownBehavior: stop
+      IamInstanceProfile: !Ref ProvisionerProfile
+      KeyName: !Ref KeyName
+      LaunchTemplate: 
+        LaunchTemplateName: !Ref AWS::StackName
+        Version: 1        
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: false
+          DeleteOnTermination: true
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref ProvisionerSG
+          SubnetId: !Ref PrivateSubnetId
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: !Ref FlashType
+            VolumeSize: 40
+            DeleteOnTermination: true
+            Encrypted: true
+      UserData:
+        Fn::Base64: !Sub |
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
+
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+
+          #cloud-config
+          cloud_final_modules:
+          - [scripts-user, always]
+
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+
+          #!/bin/bash -xe
+          exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+          #User data runs every boot cycle
+
+          if [ $(curl -sI -w "%{http_code}\\n" "s3.${BucketRegion}.amazonaws.com" -o /dev/null --connect-timeout 10 --retry 10 --retry-delay 5 --max-time 200) == "405" ]; then
+            echo "S3 Reachable"
+          else
+            echo "S3 Unreachable"
+            exit 1
+          fi
+
+          cd /root
+          if [[ ! -e "provision.sh" ]]; then
+            aws s3 cp --region ${BucketRegion} s3://"${BucketName}/${KeyPrefix}scripts/provision.sh" ./provision.sh
+          fi
+
+          sed "" provision.sh > provision-sub.sh
+          sed -i.rep "s|\${!BucketName}|${BucketName}|g" provision-sub.sh
+          sed -i.rep "s|\${!BucketRegion}|${BucketRegion}|g" provision-sub.sh
+          sed -i.rep "s|\${!CMK}|${CMK}|g" provision-sub.sh
+          sed -i.rep "s|\${!ClusterPwd}|${ClusterPwd}|g" provision-sub.sh
+          sed -i.rep "s|\${!ClusterSecretsArn}|${ClusterSecretsArn}|g" provision-sub.sh
+          sed -i.rep "s|\${!FlashIops}|${FlashIops}|g" provision-sub.sh
+          sed -i.rep "s|\${!FlashTput}|${FlashTput}|g" provision-sub.sh
+          sed -i.rep "s|\${!FloatIPs}|${FloatIPs}|g" provision-sub.sh
+          sed -i.rep "s|\${!InstanceIDs}|${InstanceIDs}|g" provision-sub.sh
+          sed -i.rep "s|\${!KeyPrefix}|${KeyPrefix}|g" provision-sub.sh
+          sed -i.rep "s|\${!MaxNodesDown}|${MaxNodesDown}|g" provision-sub.sh
+          sed -i.rep "s|\${!ModOverness}|${ModOverness}|g" provision-sub.sh
+          sed -i.rep "s|\${!Node1IP}|${Node1IP}|g" provision-sub.sh
+          sed -i.rep "s|\${!NodeIPs}|${NodeIPs}|g" provision-sub.sh
+          sed -i.rep "s|\${!NumberAZs}|${NumberAZs}|g" provision-sub.sh
+          sed -i.rep "s|\${!QClusterName}|${QClusterName}|g" provision-sub.sh
+          sed -i.rep "s|\${!QClusterVersion}|${QClusterVersion}|g" provision-sub.sh
+          sed -i.rep "s|\${!QStackName}|${QStackName}|g" provision-sub.sh
+          sed -i.rep "s|\${!Region}|${Region}|g" provision-sub.sh
+          sed -i.rep "s|\${!SideCarProv}|${SideCarProv}|g" provision-sub.sh
+          sed -i.rep "s|\${!SideCarSecretsArn}|${SideCarSecretsArn}|g" provision-sub.sh
+          sed -i.rep "s|\${!SoftwareSecretsArn}|${SoftwareSecretsArn}|g" provision-sub.sh          
+          sed -i.rep "s|\${!TermProtection}|${TermProtection}|g" provision-sub.sh
+          sed -i.rep "s|\${!TopStackName}|${TopStackName}|g" provision-sub.sh
+          
+          chmod 700 provision-sub.sh
+          ./provision-sub.sh
+
+          poweroff
+          
+Outputs:
+  ProvisionerSGID:
+    Value: !Ref ProvisionerSG
