@@ -33,9 +33,6 @@ Metadata:
         - E9902 #Unknown exception while processing rule E9902
         - E9903 #Unknown exception while processing rule E9903
         - E9904 #Unknown exception while processing rule E9904
-  QuickStartDocumentation:
-    EntrypointName: 'Parameters for deploying into an existing VPC with advanced parameters - Single AZ'
-    Order: '2'
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
@@ -187,7 +184,7 @@ Parameters:
       The Quick Start bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a 
       hyphen (-).
-    Default: aws-ia-us-east-1
+    Default: aws-ia
     Description:
       'Name of the S3 bucket for your copy of the Quick Start assets. 
       Keep the default name unless you are customizing the template. 
@@ -564,7 +561,7 @@ Parameters:
 
 Conditions:
 
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia-us-east-1']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia']
   
   R53: !Not
     - !Equals

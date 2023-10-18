@@ -126,7 +126,7 @@ Conditions:
   UsingDefaultBucket:
     Fn::Equals:
       - Ref: QSS3BucketName
-      - aws-quickstart
+      - aws-ia
   ProvFlashIops:
     Fn::Not:
       - Fn::Equals:

@@ -30,9 +30,6 @@ Metadata:
       ignore_checks:
         - W9006
         - W9901
-  QuickStartDocumentation:
-    EntrypointName: 'Parameters for deploying into an existing VPC with standard parameters - Single AZ'
-    Order: '1'
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
@@ -277,9 +274,9 @@ Resources:
         QNlbPreserveIP: "true" 
         QNlbSticky: "true"
         QNlbXzone: "false"
-        QSS3BucketName: "aws-quickstart"        
+        QSS3BucketName: "aws-ia"        
         QSS3BucketRegion: !Ref AWS::Region        
-        QSS3KeyPrefix: "quickstart-qumulo-cloud-q/"        
+        QSS3KeyPrefix: "cfn-ps-qumulo-cloud-q/"        
         QSgCidr1: !Ref QSgCidr1
         QSgCidr2: ""       
         QSgCidr3: ""   
@@ -295,7 +292,7 @@ Resources:
         TopStackName: !Ref AWS::StackName        
         VPCId: !Ref VPCId
         VolumesEncryptionKey: ""
-      TemplateURL: !Sub "https://aws-quickstart-${AWS::Region}.s3.${AWS::Region}.${AWS::URLSuffix}/quickstart-qumulo-cloud-q/templates/cfn/cloudq.cft.yaml"
+      TemplateURL: !Sub "https://aws-ia-${AWS::Region}.s3.${AWS::Region}.${AWS::URLSuffix}/cfn-ps-qumulo-cloud-q/templates/cfn/cloudq.cft.yaml"
 
 
 Outputs:
