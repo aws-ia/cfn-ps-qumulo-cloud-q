@@ -1,0 +1,1010 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+# MIT License
+#
+# Copyright (c) 2021 Qumulo, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal 
+# in the Software without restriction, including without limitation the rights 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+# copies of the Software, and to permit persons to whom the Software is 
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all 
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+# SOFTWARE.
+
+Description: This template creates a Qumulo node with any of the 28 supported disk configurations. (qs-1t69bn234)
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W2506
+        - W9001
+        - W9002
+        - W9003
+        - W9004
+        - W9006
+Parameters:
+  QAmiID:
+    Type: String
+  QClusterName:
+    Type: String
+  QFloatingIP:
+    Type: String
+  QInstanceIAMProfile:
+    Type: String
+  QInstanceRecoveryTopic:
+    Type: String
+  QInstanceType:
+    Type: String
+  KeyPair:
+    Type: String
+  QSgId:
+    Type: CommaDelimitedList
+  QClusterGroup:
+    Type: String
+  QDiskConfig:
+    Type: String
+  QFlashType:
+    Type: String
+  SubnetId:
+    Type: String
+  VolumesEncryptionKey:
+    Type: String
+  QNodeNumber:
+    Type: String
+  QStackName:
+    Type: String
+
+Mappings:
+  DiskMap:
+    600GiB-AF:
+      slotCount: 6
+      workingSlots: 6
+      workingSize: 100
+      workingSizeB: 107374182400
+      workingIOPS: 3000
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0
+    1TB-AF:
+      slotCount: 8
+      workingSlots: 8
+      workingSize: 128
+      workingSizeB: 137438953472
+      workingIOPS: 3000
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    5TB-AF:
+      slotCount: 10
+      workingSlots: 10
+      workingSize: 500
+      workingSizeB: 536870912000
+      workingIOPS: 3000
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    8TiB-AF:
+      slotCount: 16
+      workingSlots: 16
+      workingSize: 512
+      workingSizeB: 549755813888
+      workingIOPS: 3000
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    13TiB-AF:
+      slotCount: 25
+      workingSlots: 25
+      workingSize: 533
+      workingSizeB: 572304392192
+      workingIOPS: 3000
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    20TiB-AF:
+      slotCount: 25
+      workingSlots: 25
+      workingSize: 820
+      workingSizeB: 880468295680
+      workingIOPS: 3000
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    30TB-AF:
+      slotCount: 8
+      workingSlots: 8
+      workingSize: 3750
+      workingSizeB: 4026531840000
+      workingIOPS: 11250
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    35TiB-AF:
+      slotCount: 25
+      workingSlots: 25
+      workingSize: 1434
+      workingSizeB: 1539745775616
+      workingIOPS: 4302
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    55TiB-AF:
+      slotCount: 25
+      workingSlots: 25
+      workingSize: 2253
+      workingSizeB: 2419140329472
+      workingIOPS: 7659
+      backingSlots: 0
+      backingType: none
+      backingSize: 0
+      backingSizeB: 0      
+    5TB-Hybrid-st1:
+      slotCount: 15
+      workingSlots: 5      
+      workingSize: 100
+      workingSizeB: 107374182400
+      workingIOPS: 3000
+      backingSlots: 10      
+      backingType: st1
+      backingSize: 500
+      backingSizeB: 536870912000
+    8TiB-Hybrid-st1:
+      slotCount: 12
+      workingSlots: 4
+      workingSize: 150
+      workingSizeB: 161061273600
+      workingIOPS: 3000
+      backingSlots: 8
+      backingType: st1
+      backingSize: 1024
+      backingSizeB: 1099511627776      
+    13TiB-Hybrid-st1:
+      slotCount: 12
+      workingSlots: 4
+      workingSize: 175
+      workingSizeB: 187904819200
+      workingIOPS: 3000
+      backingSlots: 8
+      backingType: st1
+      backingSize: 1664
+      backingSizeB: 1786706395136      
+    20TB-Hybrid-st1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 160
+      workingSizeB: 171798691840
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: st1
+      backingSize: 2000
+      backingSizeB: 2147483648000      
+    35TiB-Hybrid-st1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 350
+      workingSizeB: 375809638400
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: st1
+      backingSize: 3584
+      backingSizeB: 3848290697216      
+    55TiB-Hybrid-st1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 550
+      workingSizeB: 590558003200
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: st1
+      backingSize: 5632
+      backingSizeB: 6047313952768      
+    90TiB-Hybrid-st1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 900
+      workingSizeB: 966367641600
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: st1
+      backingSize: 9216
+      backingSizeB: 9895604649984      
+    160TiB-Hybrid-st1:
+      slotCount: 24
+      workingSlots: 8
+      workingSize: 1000
+      workingSizeB: 1073741824000
+      workingIOPS: 3000
+      backingSlots: 16
+      backingType: st1
+      backingSize: 10240
+      backingSizeB: 10995116277760      
+    256TiB-Hybrid-st1:
+      slotCount: 24
+      workingSlots: 8
+      workingSize: 1600
+      workingSizeB: 1717986918400
+      workingIOPS: 4800
+      backingSlots: 16
+      backingType: st1
+      backingSize: 16384
+      backingSizeB: 17592186044416      
+    320TiB-Hybrid-st1:
+      slotCount: 25
+      workingSlots: 5
+      workingSize: 2500
+      workingSizeB: 2684354560000
+      workingIOPS: 7500
+      backingSlots: 20
+      backingType: st1
+      backingSize: 16384
+      backingSizeB: 17592186044416      
+    8TiB-Hybrid-sc1:
+      slotCount: 12
+      workingSlots: 4
+      workingSize: 150
+      workingSizeB: 161061273600
+      workingIOPS: 3000
+      backingSlots: 8
+      backingType: sc1
+      backingSize: 1024
+      backingSizeB: 1099511627776      
+    13TiB-Hybrid-sc1:
+      slotCount: 12
+      workingSlots: 4
+      workingSize: 175
+      workingSizeB: 187904819200
+      workingIOPS: 3000
+      backingSlots: 8
+      backingType: sc1
+      backingSize: 1664
+      backingSizeB: 1786706395136      
+    20TB-Hybrid-sc1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 160
+      workingSizeB: 171798691840
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: sc1
+      backingSize: 2000
+      backingSizeB: 2147483648000      
+    35TiB-Hybrid-sc1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 350
+      workingSizeB: 375809638400
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: sc1
+      backingSize: 3584
+      backingSizeB: 3848290697216      
+    55TiB-Hybrid-sc1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 550
+      workingSizeB: 590558003200
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: sc1
+      backingSize: 5632
+      backingSizeB: 6047313952768      
+    90TiB-Hybrid-sc1:
+      slotCount: 15
+      workingSlots: 5
+      workingSize: 900
+      workingSizeB: 966367641600
+      workingIOPS: 3000
+      backingSlots: 10
+      backingType: sc1
+      backingSize: 9216
+      backingSizeB: 9895604649984      
+    160TiB-Hybrid-sc1:
+      slotCount: 24
+      workingSlots: 8
+      workingSize: 1000
+      workingSizeB: 1073741824000
+      workingIOPS: 3000
+      backingSlots: 16
+      backingType: sc1
+      backingSize: 10240
+      backingSizeB: 10995116277760      
+    256TiB-Hybrid-sc1:
+      slotCount: 24
+      workingSlots: 8
+      workingSize: 1600
+      workingSizeB: 1717986918400
+      workingIOPS: 4800
+      backingSlots: 16
+      backingType: sc1
+      backingSize: 16384
+      backingSizeB: 17592186044416      
+    320TiB-Hybrid-sc1:
+      slotCount: 25
+      workingSlots: 5
+      workingSize: 2500
+      workingSizeB: 2684354560000
+      workingIOPS: 7500
+      backingSlots: 20
+      backingType: sc1
+      backingSize: 16384
+      backingSizeB: 17592186044416       
+
+Conditions:
+  HasEncryptionKey: !Not
+    - !Equals
+      - !Ref VolumesEncryptionKey
+      - ''
+
+  HasIamInstanceProfile: !Not
+    - !Equals
+      - !Ref QInstanceIAMProfile
+      - ''
+      
+  HasInstanceRecoveryTopic: !Not
+    - !Equals
+      - !Ref QInstanceRecoveryTopic
+      - ''
+
+  ProvFloatIP: !Not
+    - !Equals
+      - !Ref QFloatingIP
+      - "0"      
+
+  Provision5:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "5"],  Condition: Provision6]
+  Provision6:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "6"],  Condition: Provision7]
+  Provision7:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "7"],  Condition: Provision8]
+  Provision8:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "8"],  Condition: Provision9]
+  Provision9:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "9"],  Condition: Provision10]
+  Provision10: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "10"], Condition: Provision11]
+  Provision11: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "11"], Condition: Provision12]
+  Provision12: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "12"], Condition: Provision13]
+  Provision13: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "13"], Condition: Provision14]
+  Provision14: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "14"], Condition: Provision15]
+  Provision15: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "15"], Condition: Provision16]
+  Provision16: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "16"], Condition: Provision17]
+  Provision17: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "17"], Condition: Provision18]
+  Provision18: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "18"], Condition: Provision19]
+  Provision19: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "19"], Condition: Provision20]
+  Provision20: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "20"], Condition: Provision21]
+  Provision21: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "21"], Condition: Provision22]
+  Provision22: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "22"], Condition: Provision23]
+  Provision23: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "23"], Condition: Provision24]
+  Provision24: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "24"], Condition: Provision25]          
+  Provision25:      !Equals [!FindInMap [DiskMap, !Ref QDiskConfig, slotCount], "25"]
+
+  Work5:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "5"],  Condition: Work6]
+  Work6:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "6"],  Condition: Work7]
+  Work7:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "7"],  Condition: Work8]
+  Work8:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "8"],  Condition: Work9]
+  Work9:  !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "9"],  Condition: Work10]
+  Work10: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "10"], Condition: Work11]
+  Work11: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "11"], Condition: Work12]
+  Work12: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "12"], Condition: Work13]
+  Work13: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "13"], Condition: Work14]
+  Work14: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "14"], Condition: Work15]
+  Work15: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "15"], Condition: Work16]
+  Work16: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "16"], Condition: Work17]
+  Work17: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "17"], Condition: Work18]
+  Work18: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "18"], Condition: Work19]
+  Work19: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "19"], Condition: Work20]
+  Work20: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "20"], Condition: Work21]
+  Work21: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "21"], Condition: Work22]
+  Work22: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "22"], Condition: Work23]  
+  Work23: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "23"], Condition: Work24]
+  Work24: !Or [!Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "24"], Condition: Work25]
+  Work25:      !Equals [!FindInMap [DiskMap, !Ref QDiskConfig, workingSlots], "25"]  
+
+Resources:
+  CWRecoveryAlarmQumuloEC2:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+        - !Sub "arn:${AWS::Partition}:automate:${AWS::Region}:ec2:recover"
+        - !If [HasInstanceRecoveryTopic, !Ref QInstanceRecoveryTopic, !Ref AWS::NoValue]
+      AlarmDescription: !Sub "Automatic recovery alarm for ${QClusterName}-QumuloNode${QNodeNumber}"
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      DatapointsToAlarm: 2
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref QumuloNode
+      EvaluationPeriods: 2
+      MetricName: StatusCheckFailed_System
+      Namespace: "AWS/EC2"
+      OKActions: [!If [HasInstanceRecoveryTopic, !Ref QInstanceRecoveryTopic, !Ref AWS::NoValue]]
+      Period: 60
+      Statistic: Maximum
+      Threshold: 1
+
+  QumuloEni:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      GroupSet: !Ref QSgId
+      SecondaryPrivateIpAddressCount: !If [ProvFloatIP, !Ref QFloatingIP, !Ref AWS::NoValue]
+      SubnetId: !Ref SubnetId
+
+  QumuloNode:
+    Type: AWS::EC2::Instance    
+    Properties:
+      ImageId: !Ref QAmiID
+      InstanceType: !Ref QInstanceType
+      KeyName: !Ref KeyPair
+      LaunchTemplate: 
+        LaunchTemplateName: !Ref QStackName
+        Version: 1      
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          NetworkInterfaceId: !Ref QumuloEni
+      PlacementGroupName: !Ref QClusterGroup
+      IamInstanceProfile: !If [HasIamInstanceProfile, !Ref QInstanceIAMProfile, !Ref AWS::NoValue]      
+      Tags:
+        - Key: Name
+          Value: !Sub "${QStackName} - QumuloNode${QNodeNumber}"      
+      EbsOptimized: true
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            Encrypted: true
+            KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+            VolumeType: !Ref QFlashType           
+        - DeviceName: "/dev/xvdb"
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+            VolumeSize: !FindInMap [DiskMap, !Ref QDiskConfig, workingSize]
+            VolumeType: !Ref QFlashType  
+        - DeviceName: "/dev/xvdc"
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+            VolumeSize: !FindInMap [DiskMap, !Ref QDiskConfig, workingSize]
+            VolumeType: !Ref QFlashType  
+        - DeviceName: "/dev/xvdd"
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+            VolumeSize: !FindInMap [DiskMap, !Ref QDiskConfig, workingSize]
+            VolumeType: !Ref QFlashType  
+        - DeviceName: "/dev/xvde"
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+            VolumeSize: !FindInMap [DiskMap, !Ref QDiskConfig, workingSize]
+            VolumeType: !Ref QFlashType  
+        - !If 
+          - Provision5
+          - DeviceName: "/dev/xvdf"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work5, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work5, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision6
+          - DeviceName: "/dev/xvdg"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work6, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work6, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision7
+          - DeviceName: "/dev/xvdh"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work7, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work7, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision8
+          - DeviceName: "/dev/xvdi"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work8, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work8, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision9
+          - DeviceName: "/dev/xvdj"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work9, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work9, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision10
+          - DeviceName: "/dev/xvdk"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work10, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work10, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision11
+          - DeviceName: "/dev/xvdl"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work11, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work11, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision12
+          - DeviceName: "/dev/xvdm"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work12, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work12, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision13
+          - DeviceName: "/dev/xvdn"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work13, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work13, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision14
+          - DeviceName: "/dev/xvdo"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work14, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work14, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision15
+          - DeviceName: "/dev/xvdp"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work15, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work15, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision16
+          - DeviceName: "/dev/xvdq"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work16, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work16, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision17
+          - DeviceName: "/dev/xvdr"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work17, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work17, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision18
+          - DeviceName: "/dev/xvds"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work18, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work18, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision19
+          - DeviceName: "/dev/xvdt"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work19, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work19, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision20
+          - DeviceName: "/dev/xvdu"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work20, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work20, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision21
+          - DeviceName: "/dev/xvdv"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work21, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work21, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision22
+          - DeviceName: "/dev/xvdw"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work22, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work22, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision23
+          - DeviceName: "/dev/xvdx"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work23, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work23, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision24
+          - DeviceName: "/dev/xvdy"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work24, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work24, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+        - !If 
+          - Provision25
+          - DeviceName: "/dev/xvdz"
+            Ebs:
+              DeleteOnTermination: true
+              Encrypted: true
+              KmsKeyId: !If [HasEncryptionKey, !Ref VolumesEncryptionKey, !Ref AWS::NoValue]
+              VolumeSize: !If [Work25, !FindInMap [DiskMap, !Ref QDiskConfig, workingSize], !FindInMap [DiskMap, !Ref QDiskConfig, backingSize]]
+              VolumeType: !If [Work25, !Ref QFlashType , !FindInMap [DiskMap, !Ref QDiskConfig, backingType]]
+          - !Ref AWS::NoValue
+
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ''
+            - - "{"
+              - '"spec_info": '
+              - "{"
+              - '    "slot_specs": ['
+              - "        {"
+              - '            "drive_bay": "/dev/xvdb",'
+              - '            "disk_role": "working",'
+              - '            "disk_size": '
+              - !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB]
+              - "        },"
+              - "        {"
+              - '            "drive_bay": "/dev/xvdc",'
+              - '            "disk_role": "working",'
+              - '            "disk_size": '
+              - !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB]
+              - "        },"
+              - "        {"
+              - '            "drive_bay": "/dev/xvdd",'
+              - '            "disk_role": "working",'
+              - '            "disk_size": '
+              - !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB]
+              - "        },"
+              - "        {"
+              - '            "drive_bay": "/dev/xvde",'
+              - '            "disk_role": "working",'
+              - '            "disk_size": '
+              - !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB]
+              - "        }"
+              - !If 
+                - Provision5 
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdf",'
+                    - '            "disk_role": '
+                    - !If [Work5, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work5, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision6
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdg",'
+                    - '            "disk_role": '
+                    - !If [Work6, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work6, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision7
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdh",'
+                    - '            "disk_role": '
+                    - !If [Work7, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work7, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision8
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdi",'
+                    - '            "disk_role": '
+                    - !If [Work8, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work8, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision9
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdj",'
+                    - '            "disk_role": '
+                    - !If [Work9, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work9, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision10
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdk",'
+                    - '            "disk_role": '
+                    - !If [Work10, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work10, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision11
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdl",'
+                    - '            "disk_role": '
+                    - !If [Work11, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work11, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision12
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdm",'
+                    - '            "disk_role": '
+                    - !If [Work12, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work12, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision13
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdn",'
+                    - '            "disk_role": '
+                    - !If [Work13, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work13, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision14
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdo",'
+                    - '            "disk_role": '
+                    - !If [Work14, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work14, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision15
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdp",'
+                    - '            "disk_role": '
+                    - !If [Work15, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work15, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision16
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdq",'
+                    - '            "disk_role": '
+                    - !If [Work16, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work16, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision17
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdr",'
+                    - '            "disk_role": '
+                    - !If [Work17, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work17, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision18
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvds",'
+                    - '            "disk_role": '
+                    - !If [Work18, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work18, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision19
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdt",'
+                    - '            "disk_role": '
+                    - !If [Work19, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work19, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision20
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdu",'
+                    - '            "disk_role": '
+                    - !If [Work20, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work20, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision21
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdv",'
+                    - '            "disk_role": '
+                    - !If [Work21, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work21, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision22
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdw",'
+                    - '            "disk_role": '
+                    - !If [Work22, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work22, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision23
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdx",'
+                    - '            "disk_role": '
+                    - !If [Work23, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work23, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision24
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdy",'
+                    - '            "disk_role": '
+                    - !If [Work24, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work24, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - !If
+                - Provision25
+                - !Join
+                  - ''
+                  - - ",        {"
+                    - '            "drive_bay": "/dev/xvdz",'
+                    - '            "disk_role": '
+                    - !If [Work25, '"working",', '"backing",']
+                    - '            "disk_size": '
+                    - !If [Work25, !FindInMap [DiskMap, !Ref QDiskConfig, workingSizeB], !FindInMap [DiskMap, !Ref QDiskConfig, backingSizeB]]
+                    - "        }"
+                - !Ref AWS::NoValue
+              - "    ]"
+              - "}"
+              - "}"
+
+Outputs:
+  FlashIOPS: 
+    Description: gp3 Flash IOPS
+    Value: !FindInMap [DiskMap, !Ref QDiskConfig, workingIOPS]
+  NodeName:
+    Description: Name tag for this node
+    Value: !Sub "${QStackName} - QumuloNode${QNodeNumber}"  
+  NodeInstanceID:
+    Value: !Ref QumuloNode
+  NodePrivateIP:
+    Value: !GetAtt QumuloNode.PrivateIp
+  NodeSecondaryPrivateIPs:
+    Value:
+      !Join
+        - ", "
+        - !GetAtt QumuloEni.SecondaryPrivateIpAddresses

@@ -1,0 +1,845 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+# MIT License
+#
+# Copyright (c) 2021 Qumulo, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal 
+# in the Software without restriction, including without limitation the rights 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+# copies of the Software, and to permit persons to whom the Software is 
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all 
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+# SOFTWARE.
+
+Description: This is the main template to spin up a Single-AZ Qumulo Cluster with all options available in an existing VPC.  It calls cloudq.cft.yaml to instantiate the infrastructure. (qs-1s6n2i6af)
+
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W7001
+        - W9006
+        - W9901
+        - E9902 #Unknown exception while processing rule E9902
+        - E9903 #Unknown exception while processing rule E9903
+        - E9904 #Unknown exception while processing rule E9904
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: AWS Template Configuration - Cloud Q Quick Start Existing VPC - Single AZ - Advanced v4.4
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+          - KeyPair
+          - EnvType
+
+      - Label: 
+          default: AWS network configuration
+        Parameters:
+          - VPCId
+          - QSgCidr1
+          - QSgCidr2
+          - QSgCidr3
+          - QSgCidr4                              
+          - PrivateSubnetID
+          - QClusterLocalZone
+          - SideCarPrivateSubnetID
+          - QPublicMgmt
+          - QPublicRepl
+          - PublicSubnetID
+          - QNlb
+          - QNlbPrivateSubnetIDs           
+          - DomainName
+          - QFloatRecordName
+
+      - Label:
+          default: Qumulo file data platform configuration
+        Parameters:
+          - QDr
+          - QMarketPlaceType
+          - QAmiID
+          - QInstanceType
+          - QNodeCount
+          - QDiskConfig
+          - QFlashType
+          - QFlashTput
+          - QFlashIops
+          - QFloatingIP
+          - QClusterVersion
+          - QClusterName
+          - QClusterAdminPwd
+          - VolumesEncryptionKey
+          - QPermissionsBoundary
+          - QInstanceRecoveryTopic
+          - QAuditLog
+          - TermProtection
+
+      - Label:
+          default: Qumulo EBS monitoring/replacement & CloudWatch metrics configuration
+        Parameters:
+          - SideCarProv
+          - SideCarVersion
+          - SideCarSNSTopic
+
+    ParameterLabels:
+      QSS3BucketName:
+        default: "S3 bucket name"
+      QSS3KeyPrefix:
+        default: "S3 key prefix"
+      QSS3BucketRegion:
+        default: "S3 bucket Region"
+      KeyPair:
+        default: "EC2 key pair"
+      EnvType:
+        default: "Environment type"
+      VPCId:
+        default: "VPC ID"
+      PrivateSubnetID:
+        default: "Private subnet ID"
+      PublicSubnetID:
+        default: "Public subnet ID"
+      QSgCidr1:
+        default: "CIDR #1 for the Qumulo security group"
+      QSgCidr2:
+        default: "CIDR #2 for the Qumulo security group"
+      QSgCidr3:
+        default: "CIDR #3 for the Qumulo security group"
+      QSgCidr4:
+        default: "CIDR #4 for the Qumulo security group"                        
+      QPublicMgmt: 
+        default: "Qumulo public management"
+      QPublicRepl: 
+        default: "Qumulo public replication" 
+      QNlb:
+        default: "Deploy an AWS Network Load Balancer"     
+      QNlbPrivateSubnetIDs:
+        default: "AWS Private Subnet ID for the Network Load Balancer"           
+      DomainName:
+        default: "Domain name for a Route 53 hosted zone"
+      QFloatingIP:
+        default: "Qumulo floating IP addresses for IP failover"
+      QFloatRecordName:
+        default: "Route 53 record name for Qumulo-cluster floating IP addresses"
+      QDr:
+        default: "Qumulo cluster for disaster recovery"
+      QClusterName:
+        default: "Qumulo cluster name"
+      QClusterAdminPwd:
+        default: "Qumulo cluster administrator password"
+      QNodeCount: 
+        default: "Number of Qumulo EC2 instances"
+      QDiskConfig:
+        default: "EBS volume configuration"
+      QFlashType:
+        default: "EBS flash type"
+      QFlashTput:
+        default: "EBS gp3 throughput"
+      QFlashIops:
+        default: "EBS gp3 IOPS"                        
+      QClusterVersion:
+        default: "Qumulo Core software version"
+      QAmiID:
+        default: "Qumulo AMI ID"
+      QMarketPlaceType:
+        default: "Type of Qumulo AWS Marketplace offering"
+      QInstanceType:
+        default: "Qumulo EC2 instance type"
+      VolumesEncryptionKey:
+        default: "EBS volumes encryption key"
+      QPermissionsBoundary:
+        default: "Qumulo permissions boundary policy name"
+      QInstanceRecoveryTopic:
+        default: "Qumulo EC2 instance recovery topic"
+      QAuditLog:
+        default: "Qumulo audit-log messages to CloudWatch Logs"
+      TermProtection:
+        default: "Termination protection "
+      QClusterLocalZone:
+        default: "Qumulo cluster in a Local Zone or Outpost"
+      SideCarProv:
+        default: "Qumulo Sidecar (Lambda) provisioning"
+      SideCarPrivateSubnetID:
+        default: "Qumulo Sidecar (Lambda) private subnet ID"
+      SideCarVersion:
+        default: "Qumulo Sidecar software version "
+      SideCarSNSTopic:
+        default: "Qumulo EBS volume recovery SNS topic"
+
+Parameters:
+
+  QSS3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription:
+      The Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a 
+      hyphen (-).
+    Default: aws-ia
+    Description:
+      'Name of the S3 bucket for your copy of the Quick Start assets. 
+      Keep the default name unless you are customizing the template. 
+      Changing the name updates code references to point to a new Quick 
+      Start location. This name can include numbers, lowercase letters, 
+      uppercase letters, and hyphens, but do not start or end with a hyphen (-). 
+      See https://aws-quickstart.github.io/option1.html.'
+    Type: String
+
+  QSS3BucketRegion:
+    Default: us-east-1
+    Description: 'AWS Region where the Quick Start S3 bucket (QSS3BucketName) is 
+    hosted. Keep the default Region unless you are customizing the template. 
+    Changing this Region updates code references to point to a new Quick Start location. 
+    When using your own bucket, specify the Region. 
+    See https://aws-quickstart.github.io/option1.html.'
+    Type: String
+
+  QSS3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription:
+      The Quick Start S3 key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slashes (/).
+    Default: cfn-ps-qumulo-cloud-q/
+    Description:
+      'S3 key prefix that is used to simulate a folder for your copy of the 
+      Quick Start assets. Keep the default prefix unless you are customizing 
+      the template. Changing this prefix updates code references to point to 
+      a new Quick Start location. This prefix can include numbers, lowercase 
+      letters, uppercase letters, hyphens (-), and forward slashes (/). 
+      See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html 
+      and https://aws-quickstart.github.io/option1.html.'
+    Type: String
+
+  KeyPair:
+    Description: Name of the key pair to be used to connect to your EC2 instances.
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: mykeypair
+
+  EnvType:
+    Description: 'Choose "qa" or "prod" if you are not deploying into a development environment.'
+    AllowedValues:
+      - dev
+      - qa
+      - prod
+    Type: String
+    Default: dev
+
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: ID of the VPC that you're deploying this Quick Start into.
+
+  QPublicMgmt:
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Description: Choose YES to provision an Elastic IP address (public static) attached to a Network Load Balancer listening only on port 443 for Qumulo Management. Not supported in Local Zones or Outposts.
+    Type: String
+    Default: "NO"
+
+  QPublicRepl:
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Description: Choose YES to enable port 3712 for replication from on-prem Qumulo systems using the Elastic IP (public static) for Qumulo management. Requires YES to QPublicMgmt.
+    Type: String
+    Default: "NO"
+
+  PublicSubnetID:
+    Type: AWS::EC2::Subnet::Id
+    Description: A subnet ID must be selected. It is used only if YES was selected for QPublicMgmt.
+
+  PrivateSubnetID:
+    Type: AWS::EC2::Subnet::Id
+    Description: ID of the private subnet.
+
+  QNlbPrivateSubnetIDs:
+    Type: AWS::EC2::Subnet::Id
+    Description: A subnet ID must be selected. It is used only if YES was selected for QNlb.
+
+  QNlb:
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Description: Choose YES to deploy an NLB. This will negate any Route53 PHZ options below and disable floating IPs on the cluster.
+    Type: String
+    Default: "NO"
+
+  DomainName:
+    Description: "(Optional) To create a Route 53 private hosted zone to resolve IP addresses, enter a fully qualified domain name (FQDN). You may use the .local suffix, e.g., qumulo.companyname.local. If your VPC already has a means of DNS resolution and you do not need to create a Route 53 hosted zone, keep this value blank."
+    AllowedPattern: '^$|^([a-zA-Z0-9-]+\..+)$'
+    MaxLength: '255'
+    Type: String
+    Default: ""
+
+  QDr:
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Description: Choose YES to deploy a cluster for a disaster-recovery workload.
+    Type: String
+    Default: "NO"
+
+  QFloatRecordName:
+    Description: "(Optional) Applies only if you provided DomainName. Specify a Route 53 record name for Qumulo-cluster floating IP addresses. This adds a prefix to the FQDN, e.g., cluster1.qumulo.mycompanyname.local"
+    Type: String
+    Default: ""
+
+  QNodeCount:
+    Description: "Total number of EC2 instances, or nodes, in the Qumulo cluster (4-20). You can use this field to add nodes with a CloudFormation stack update after initial provisioning."
+    AllowedValues:
+      - Select for Custom Offering OR Expanding Cluster
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+      - "14"
+      - "15"
+      - "16"
+      - "17"
+      - "18"
+      - "19"
+      - "20"            
+    Type: String
+    Default: Select for Custom Offering OR Expanding Cluster
+
+  QDiskConfig:
+    Description: "Choose the EBS volume configuration and type for the Qumulo EC2 instances: AF= SSD, Hybrid st1= SSD+HDD st1, Hybrid sc1= SSD+HDD sc1. This must match the EBS capacity and type of the customizable private offer."
+    AllowedValues:
+      - Select for Custom Offering
+      - 600GiB-AF
+      - 1TB-AF
+      - 5TB-AF
+      - 8TiB-AF
+      - 13TiB-AF
+      - 20TiB-AF
+      - 30TB-AF
+      - 35TiB-AF
+      - 55TiB-AF
+      - 5TB-Hybrid-st1
+      - 8TiB-Hybrid-st1
+      - 13TiB-Hybrid-st1
+      - 20TB-Hybrid-st1
+      - 35TiB-Hybrid-st1
+      - 55TiB-Hybrid-st1
+      - 90TiB-Hybrid-st1
+      - 160TiB-Hybrid-st1
+      - 256TiB-Hybrid-st1
+      - 320TiB-Hybrid-st1
+      - 8TiB-Hybrid-sc1
+      - 13TiB-Hybrid-sc1
+      - 20TB-Hybrid-sc1
+      - 35TiB-Hybrid-sc1
+      - 55TiB-Hybrid-sc1
+      - 90TiB-Hybrid-sc1
+      - 160TiB-Hybrid-sc1
+      - 256TiB-Hybrid-sc1
+      - 320TiB-Hybrid-sc1
+    Type: String
+    Default: Select for Custom Offering
+
+  QFlashType:
+    Description: "Choose the EBS flash type: gp2 or gp3.  Default is gp3."
+    AllowedValues:
+      - gp2
+      - gp3
+    Type: String
+    Default: gp3
+
+  QFlashTput:
+    Description: "Use Qumulo Default adjusts the throughput for the gp3 volume per Qumulo recommendations. Override the default only if you have consulted with Qumulo."
+    AllowedValues:
+      - Use Qumulo Default
+      - 250
+      - 500
+      - 750
+      - 1000      
+    Type: String
+    Default: Use Qumulo Default
+
+  QFlashIops:
+    Description: "Use Qumulo Default adjusts the IOPS for the gp3 volume per Qumulo recommendations. Override the default only if you have consulted with Qumulo."
+    AllowedValues:
+      - Use Qumulo Default
+      - 3000
+      - 4000
+      - 5000
+      - 6000
+      - 7000 
+      - 8000
+      - 9000
+      - 10000
+      - 11000
+      - 12000 
+      - 13000
+      - 14000
+      - 15000
+      - 16000                  
+    Type: String
+    Default: Use Qumulo Default
+
+  QAmiID:
+    Description: "Used only for the specified AMI ID offering. Amazon Machine Image (AMI) ID is supplied by Qumulo."
+    Type: String
+    Default: "Only for Specified AMI-ID Offering"
+
+  QMarketPlaceType:
+    Description: Choose the usable capacity of the AWS Marketplace Qumulo offering you accepted. Customizable offerings typically use a private offer from AWS Marketplace and can be used to deploy 1TB to 6PB with this template.
+    AllowedValues:
+      - 1TB-Usable-All-Flash
+      - 12TB-Usable-Hybrid-st1
+      - 96TB-Usable-Hybrid-st1
+      - 103TB-Usable-All-Flash
+      - 270TB-Usable-Hybrid-st1
+      - 809TB-Usable-Hybrid-st1
+      - Custom-1TB-6PB
+      - Specified-AMI-ID
+    Type: String
+    Default: 1TB-Usable-All-Flash
+
+  QFloatingIP:
+    AllowedValues:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+    Description: Number of EC2 secondary IP addresses (1-4) to be configured for each instance in the cluster.
+    Type: String
+    Default: "3"
+
+  QClusterName:
+    AllowedPattern: "^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$"
+    Description: Alphanumeric string between 2 and 15 characters. Dash (-) is allowed if not the first or last character.
+    MaxLength: 15
+    MinLength: 2
+    Type: String
+    Default: Cloud-Q
+
+  QClusterVersion:
+    Description: "Software version to install on the cluster. You cannot use this field to upgrade the cluster with a CloudFormation stack update.
+                 All updates after initial creation must follow the quarterly release cadence using the web UI or REST API."
+    MaxLength: 11
+    MinLength: 5
+    Type: String
+    Default: "6.1.0"
+
+  QClusterAdminPwd:
+    AllowedPattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&\\-_])[A-Za-z\\d@$!%*?&\\-_]{8,}$"
+    Description: "Minimum 8 characters. Must include one each of the following: uppercase letter, lowercase letter, and special character."
+    MaxLength: 128
+    MinLength: 8
+    Type: String
+    NoEcho: "true"
+
+  QInstanceType:
+    Description: EC2 instance type for Qumulo nodes.
+    AllowedValues:
+      - m5.xlarge
+      - m5.2xlarge
+      - m5.4xlarge
+      - m5.8xlarge
+      - m5.12xlarge
+      - m5.16xlarge
+      - m5.24xlarge
+      - m6i.xlarge
+      - m6i.2xlarge
+      - m6i.4xlarge
+      - m6i.8xlarge
+      - m6i.12xlarge
+      - m6i.16xlarge
+      - m6i.24xlarge
+      - m6i.32xlarge      
+      - c5n.4xlarge
+      - c5n.9xlarge
+      - c5n.18xlarge
+    Type: String
+    Default: m5.2xlarge
+
+  VolumesEncryptionKey: 
+    Description: "(Optional) Leave blank, and AWS generates a key. To specify a customer managed key (CMK), provide the KMS CMK ID in this format: 12345678-1234-1234-1234-1234567890ab"
+    Type: String
+    Default: ""
+
+  QPermissionsBoundary:
+    Description: "(Optional) Apply an IAM permissions boundary policy to the Qumulo IAM roles that are created for the Qumulo cluster and provisioning instance. This is an account-based policy. 
+                  Qumulo's IAM roles conform to the least-privilege model."
+    Type: String
+    Default: ""
+
+  QInstanceRecoveryTopic:
+    Description: (Optional) Enter the ARN of an SNS topic to receive messages from instance alarms.
+    Type: String
+    Default: ""
+
+  QSgCidr1:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$"
+    Description: An IPv4 CIDR block for specifying the generated security group's allowed addresses for inbound traffic. Typically set to the VPC CIDR.
+    Type: String
+    Default: "10.0.0.0/16"
+
+  QSgCidr2:
+    AllowedPattern: "^$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$"
+    Description: (Optional) An IPv4 CIDR block for specifying the generated security group's allowed addresses for inbound traffic.
+    Type: String
+    Default: ""
+
+  QSgCidr3:
+    AllowedPattern: "^$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$"
+    Description: (Optional) An IPv4 CIDR block for specifying the generated security group's allowed addresses for inbound traffic.
+    Type: String
+    Default: ""
+
+  QSgCidr4:
+    AllowedPattern: "^$|^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(3[0-2]|[1-2][0-9]|[0-9]))$"
+    Description: (Optional) An IPv4 CIDR block for specifying the generated security group's allowed addresses for inbound traffic.
+    Type: String
+    Default: ""
+
+  TermProtection:
+    Description: Enable termination protection for EC2 instances and the CloudFormation stack.
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Type: String
+    Default: "YES"
+
+  QClusterLocalZone:
+    Description: Choose YES if you're deploying the Qumulo cluster in a Local Zone or Outpost. AWS Lambda, which is not supported in Local Zones or Outposts, will be placed in the subnet you specify.
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Type: String
+    Default: "NO"
+
+  QAuditLog:
+    Description: Choose YES to create a CloudWatch Logs group for the Qumulo cluster that captures all Qumulo audit-log activity.
+    AllowedValues:
+      - "YES"
+      - "NO"
+    Type: String
+    Default: "NO"
+
+  SideCarPrivateSubnetID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Choose an AWS subnet ID in one of the Region's Availability Zones (not in a Local Zone, not an Outposts subnet). This ID is used only if you chose YES for Local Zone or Outpost.
+
+  SideCarProv:
+    Description: "Choose NO if you do not want to deploy the Qumulo Sidecar (Lambda) functions to monitor and replace failed EBS volumes and send metrics to CloudWatch. Keep the default (YES) for production environments with WAF compliance. 
+                  You can disable this provisioning only for test environments."
+    AllowedValues:
+      - "YES"
+      - "NO"      
+    Type: String
+    Default: "YES"
+
+  SideCarVersion:
+    Description: "Software version should match the desired cluster version at creation. You may use this field to upgrade the SideCar software version 
+                  with a CloudFormation stack update after upgrading the cluster using the web UI or REST API."
+    MaxLength: 11
+    MinLength: 5
+    Type: String
+    Default: "6.1.0"
+
+  SideCarSNSTopic:
+    Description: (Optional) Enter an SNS topic ARN to publish Sidecar (Lambda) errors and successful EBS disk replacements to.
+    Type: String
+    Default: ""
+
+Conditions:
+
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-ia']
+  
+  R53: !Not
+    - !Equals
+      - !Ref DomainName
+      - ""
+
+  PubMgmt: !Not
+    - !Equals
+      - !Ref QPublicMgmt
+      - "NO"
+
+  LocalAZ: !Not
+    - !Equals
+      - !Ref QClusterLocalZone
+      - "NO"
+
+  NLB: !Not
+    - !Equals
+      - !Ref QNlb
+      - "NO"
+
+  ProvMgmt: !And [Condition: PubMgmt, !Not [Condition: LocalAZ]]
+
+  ProvNlb: !And [Condition: NLB, !Not [Condition: LocalAZ]]  
+
+  ProvR53: !And [Condition: R53, !Not [Condition: NLB]]
+
+Rules:
+  CustomRule:
+    RuleCondition: !Equals [!Ref QMarketPlaceType, "Custom-1TB-6PB"]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref QNodeCount, "Select for Custom Offering OR Expanding Cluster"]]
+        AssertDescription: "A Custom Marketplace Offering requires the EC2 Instance Count to be selected. "
+      - Assert: !Not [!Equals [!Ref QDiskConfig, "Select for Custom Offering"]]
+        AssertDescription: "A Custom Marketplace Offering requires the EBS volume configuration to be selected."
+
+  SpecifiedAMIRule:
+    RuleCondition: !Equals [!Ref QMarketPlaceType, "Specified-AMI-ID"]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref QNodeCount, "Select for Custom Offering OR Expanding Cluster"]]
+        AssertDescription: "A Specified AMI-ID Offering requires the EC2 Instance Count to be selected. "
+      - Assert: !Not [!Equals [!Ref QDiskConfig, "Select for Custom Offering"]]
+        AssertDescription: "A Specified AMI-ID Offering requires the EBS volume configuration to be selected."
+      - Assert: !Not [!Equals [!Ref QAmiID, "Only for Specified AMI-ID Offering"]]
+        AssertDescription: "A Specified AMI-ID Offering requires an AMI-ID"
+
+  LocalZoneEC2Rule:
+    RuleCondition: !Equals [!Ref QClusterLocalZone, "YES"]
+    Assertions:
+      - Assert: !Not 
+        - !Contains 
+          - - c5n.4xlarge
+            - c5n.9xlarge
+            - c5n.18xlarge
+          - !Ref QInstanceType
+        AssertDescription: "Local Zones and Outposts do not support c5n EC2 instance types. Use m5 instance types."
+      - Assert: !Not [!Equals [!Ref PrivateSubnetID, !Ref SideCarPrivateSubnetID]]
+        AssertDescription: "Deploy the Cluster in the Local Zone or Outpost subnet. Deploy the Sidecar Lambda functions in a subnet associated with a Region Availability Zone."
+      - Assert: !Not [!Equals [ !Ref QPublicMgmt, "YES"]]
+        AssertDescription: "Local Zones and Outpost do not support the Public Management option."
+
+  SubnetsInVPCRule:
+    Assertions:
+      - Assert: !EachMemberIn
+        - !ValueOfAll
+          - "AWS::EC2::Subnet::Id"
+          - VpcId
+        - !RefAll "AWS::EC2::VPC::Id"
+        AssertDescription: "All subnets must be in the same VPC"
+
+  SubnetsInAZRuleMgmt:
+    RuleCondition: !And [!Equals [!Ref QClusterLocalZone, "NO"], !Equals [ !Ref QPublicMgmt, "YES"]]
+    Assertions:
+      - Assert: !Equals 
+        - !ValueOf
+          - PrivateSubnetID
+          - AvailabilityZone
+        - !ValueOf
+          - PublicSubnetID
+          - AvailabilityZone
+        AssertDescription: "All subnets must be in the same Availability Zone when selecting the Public Management Option"
+
+  SubnetsInAZRuleNlb:
+    RuleCondition: !And [!Equals [!Ref QClusterLocalZone, "NO"], !Equals [ !Ref QNlb, "YES"]]
+    Assertions:
+      - Assert: !Equals 
+        - !ValueOf
+          - PrivateSubnetID
+          - AvailabilityZone
+        - !ValueOf
+          - QNlbPrivateSubnetIDs
+          - AvailabilityZone     
+        AssertDescription: "All subnets must be in the same Availability Zone when selecting the Network Load Balancer Deployment Option"
+
+  EnvTypeRule:
+    RuleCondition: !Not [!Equals [!Ref EnvType, "dev"]]
+    Assertions: 
+      - Assert: !Not [!Or [!Equals [!Ref QInstanceType, m5.xlarge], !Equals [!Ref QInstanceType, m6i.xlarge]]]
+        AssertDescription: "m5.xlarge or m6i.xlarge instance types are not supported for production environments. Choose at least a .2xlarge or switch to a dev environment type."
+
+  DrEBSRule:
+    RuleCondition: !Equals [!Ref QDr, "YES"]
+    Assertions:
+      - Assert: !Contains
+        - - Custom-1TB-6PB
+          - Specified-AMI-ID
+        - !Ref QMarketPlaceType
+        AssertDescription: "Disaster-recovery clusters require Custom-1TB-6PB or Specified-AMI-ID offering. Choose the appropriate offering."
+      - Assert: !Contains 
+        - - m5.xlarge
+          - m5.2xlarge
+          - m5.4xlarge
+          - m5.8xlarge
+          - m6i.xlarge
+          - m6i.2xlarge
+          - m6i.4xlarge
+          - m6i.8xlarge          
+        - !Ref QInstanceType
+        AssertDescription: "Disastery-recovery clusters support m5 or m6i .2xlarge, .4xlarge, and .8xlarge instance types. Choose one of these EC2 instance types."
+      - Assert: !Contains 
+        - - 8TiB-Hybrid-sc1
+          - 13TiB-Hybrid-sc1
+          - 20TB-Hybrid-sc1
+          - 35TiB-Hybrid-sc1
+          - 55TiB-Hybrid-sc1
+          - 90TiB-Hybrid-sc1
+          - 160TiB-Hybrid-sc1
+          - 256TiB-Hybrid-sc1
+          - 320TiB-Hybrid-sc1
+        - !Ref QDiskConfig
+        AssertDescription: "Disastery-recovery clusters support Hybrid-sc1. Choose one of these EBS configurations."
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      Custom: ami-032d36d831b2435aa
+    us-east-2:
+      Custom: ami-0518fb4af56a61198
+    us-west-1:
+      Custom: ami-0fa43101ae578e760
+    us-west-2:
+      Custom: ami-04e83ac511793996f
+    us-gov-west-1:
+      Custom: ami-050731cf3fb56df19
+    us-gov-east-1:
+      Custom: ami-023324c6949c67aa3
+    ca-central-1:
+      Custom: ami-08c790d9a24353d98
+    eu-central-1:
+      Custom: ami-0f0f6036a0b22bed3
+    eu-west-1:
+      Custom: ami-0137ab8f555c8131e
+    eu-west-2:
+      Custom: ami-0ca025728995434a1
+    eu-west-3:
+      Custom: ami-0650eb171386605ce
+    eu-north-1:
+      Custom: ami-091ec9ed49c2fa333
+    eu-south-1:
+      Custom: ami-0923b4ce1ff09046d
+    ap-southeast-1:
+      Custom: ami-0003f71dd474cc609
+    ap-southeast-2:
+      Custom: ami-01ce007aa566996f3
+    ap-south-1:
+      Custom: ami-07e47d3fcfaa1cea9
+    ap-northeast-1:
+      Custom: ami-08ffbd8a8a2f1cc8a
+    ap-northeast-2:
+      Custom: ami-0b3e0582fcb643084
+    ap-east-1:
+      Custom: ami-0511d4cdb2c1457b5
+    sa-east-1:
+      Custom: ami-0e620bfa90fe6a2d4
+    me-south-1:
+      Custom: ami-0203430c4d6fc323b
+    af-south-1:
+      Custom: ami-0e7faebf7d6207a7c
+
+Resources:
+
+  CloudQStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        DomainName: !If [ProvNlb, "", !Ref DomainName]
+        EnvType: !Ref EnvType
+        KeyPair: !Ref KeyPair
+        NumberAZs: "1"            
+        PrivateSubnetIDs: !Ref PrivateSubnetID
+        PublicSubnetIDs: !Ref PublicSubnetID
+        QAmiID: !Ref QAmiID
+        QAmiVer: "5.3.0"        
+        QAuditLog: !Ref QAuditLog
+        QClusterAdminPwd: !Ref QClusterAdminPwd
+        QClusterLocalZone: !Ref QClusterLocalZone
+        QClusterName: !Ref QClusterName
+        QClusterVersion: !Ref QClusterVersion
+        QDiskConfig: !Ref QDiskConfig
+        QDr: !Ref QDr
+        QFlashIops: !Ref QFlashIops
+        QFlashTput: !Ref QFlashTput
+        QFlashType: !Ref QFlashType
+        QFloatRecordName: !If [ProvNlb, "", !Ref QFloatRecordName]
+        QFloatingIP: !If [ProvNlb, "0", !Ref QFloatingIP]
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        QMarketPlaceType: !Ref QMarketPlaceType
+        QMaxNodesDown: "1"        
+        QModOverness: "NO"
+        QNlbDeregDelay: "60"
+        QNlbDeregTerm: "false"
+        QNlbPreserveIP: "true" 
+        QNlbPrivateSubnetIDs: !If [ProvNlb, !Ref QNlbPrivateSubnetIDs, ""]       
+        QNlbSticky: "true"
+        QNlbXzone: "false"        
+        QNodeCount: !Ref QNodeCount
+        QPermissionsBoundary: !Ref QPermissionsBoundary        
+        QPublicMgmt: !Ref QPublicMgmt
+        QPublicRepl: !Ref QPublicRepl
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSgCidr1: !Ref QSgCidr1
+        QSgCidr2: !Ref QSgCidr2        
+        QSgCidr3: !Ref QSgCidr3   
+        QSgCidr4: !Ref QSgCidr4        
+        RequireIMDSv2: "YES" #Supported from 5.1.0.1 onward   
+        SideCarPassword: !Ref QClusterAdminPwd
+        SideCarPrivateSubnetID: !Ref SideCarPrivateSubnetID
+        SideCarProv: !Ref SideCarProv
+        SideCarSNSTopic: !Ref SideCarSNSTopic
+        SideCarUsername: "SideCarUser"
+        SideCarVersion: !Ref SideCarVersion
+        TermProtection: !Ref TermProtection
+        TopStackName: !Ref AWS::StackName
+        VPCId: !Ref VPCId
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+      TemplateURL:
+        !Sub
+          - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/mp/cfn/cloudq.cft.yaml
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+
+Outputs:
+
+  QumuloPrivateIP:
+    Description: Private IP for Qumulo Cluster Management
+    Value: !GetAtt CloudQStack.Outputs.QumuloPrivateIP
+  QumuloNLBPublicURL:
+    Condition: ProvMgmt
+    Description: Public URL for Management NLB connected to Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloNLBPublicURL
+  QumuloNLBPrivateNFS:
+    Condition: ProvNlb
+    Description: Private NFS path to Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloNLBPrivateNFS  
+  QumuloNLBPrivateSMB:
+    Condition: ProvNlb
+    Description: Private SMB UNC path to Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloNLBPrivateSMB       
+  QumuloNLBPrivateURL:
+    Condition: ProvNlb  
+    Description: Private URL for NLB Connected to Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloNLBPrivateURL         
+  QumuloPrivateNFS:  
+    Condition: ProvR53
+    Description: Private NFS path for Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloPrivateNFS
+  QumuloPrivateSMB:
+    Condition: ProvR53
+    Description: Private SMB UNC path for Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloPrivateSMB         
+  QumuloPrivateURL:
+    Condition: ProvR53
+    Description: Private URL for Qumulo Cluster
+    Value: !GetAtt CloudQStack.Outputs.QumuloPrivateURL
+  QumuloKnowledgeBase:
+    Description: Qumulo Knowledge Base
+    Value: !GetAtt CloudQStack.Outputs.QumuloKnowledgeBase

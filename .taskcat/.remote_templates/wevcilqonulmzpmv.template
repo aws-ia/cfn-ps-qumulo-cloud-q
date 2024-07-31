@@ -1,0 +1,1148 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+# MIT License
+#
+# Copyright (c) 2021 Qumulo, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal 
+# in the Software without restriction, including without limitation the rights 
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+# copies of the Software, and to permit persons to whom the Software is 
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all 
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+# SOFTWARE.
+
+Description: This template buiilds the Qumulo Cluster.  It calls subordinate CloudFormation templates to instantiate the infrastructure. (qs-1t69a3rgc)
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W9002
+        - W9003
+        - W9004
+        - W9006
+Parameters:
+
+  BucketName:
+    Type: String
+  BucketRegion:
+    Type: String
+  KeyPrefix:
+    Type: String  
+  KeyPair:
+    Type: String
+  VPCId:
+    Type: String
+  PrivateSubnetIDs:
+    Type: CommaDelimitedList
+  NumberAZs:
+    Type: String
+  QNodeCount:
+    Type: String
+  QDiskConfig:
+    Type: String
+  QFlashType:
+    Type: String
+  QAmiID:
+    Type: String
+  QFloatingIP:
+    Type: String
+  QClusterName:
+    Type: String  
+  QInstanceType:
+    Type: String
+  VolumesEncryptionKey: 
+    Type: String
+  QInstanceRecoveryTopic:
+    Type: String
+  QInstanceIAMProfile:
+    Type: String    
+  QSgCidr1:
+    Type: String
+  RequireIMDSv2:
+    Type: String
+
+Conditions:
+
+  Provision5:  !Or [!Equals [!Ref QNodeCount, "5"],  Condition: Provision6]
+  Provision6:  !Or [!Equals [!Ref QNodeCount, "6"],  Condition: Provision7]
+  Provision7:  !Or [!Equals [!Ref QNodeCount, "7"],  Condition: Provision8]
+  Provision8:  !Or [!Equals [!Ref QNodeCount, "8"],  Condition: Provision9]
+  Provision9:  !Or [!Equals [!Ref QNodeCount, "9"],  Condition: Provision10]
+  Provision10: !Or [!Equals [!Ref QNodeCount, "10"], Condition: Provision11]
+  Provision11: !Or [!Equals [!Ref QNodeCount, "11"], Condition: Provision12]
+  Provision12: !Or [!Equals [!Ref QNodeCount, "12"], Condition: Provision13]
+  Provision13: !Or [!Equals [!Ref QNodeCount, "13"], Condition: Provision14]
+  Provision14: !Or [!Equals [!Ref QNodeCount, "14"], Condition: Provision15]
+  Provision15: !Or [!Equals [!Ref QNodeCount, "15"], Condition: Provision16]
+  Provision16: !Or [!Equals [!Ref QNodeCount, "16"], Condition: Provision17]
+  Provision17: !Or [!Equals [!Ref QNodeCount, "17"], Condition: Provision18]
+  Provision18: !Or [!Equals [!Ref QNodeCount, "18"], Condition: Provision19]
+  Provision19: !Or [!Equals [!Ref QNodeCount, "19"], Condition: Provision20]       
+  Provision20: !Or [!Equals [!Ref QNodeCount, "20"], Condition: Provision21]    
+  Provision21: !Or [!Equals [!Ref QNodeCount, "21"], Condition: Provision22]
+  Provision22: !Or [!Equals [!Ref QNodeCount, "22"], Condition: Provision23]
+  Provision23: !Or [!Equals [!Ref QNodeCount, "23"], Condition: Provision24]   
+  Provision24:      !Equals [!Ref QNodeCount, "24"]
+
+  ProvMultiAZ: !Not
+    - !Equals
+      - !Ref NumberAZs
+      - "1"
+
+  ProvFloatIP: !Not
+    - !Equals
+      - !Ref QFloatingIP
+      - "0"
+
+  StrictIMDSv2: !Equals
+    - !Ref RequireIMDSv2
+    - "YES"
+
+Mappings:
+  AZforNode:
+    "1":
+      "1":  "0"
+      "2":  "0"
+      "3":  "0"
+      "4":  "0"
+      "5":  "0"
+      "6":  "0"
+      "7":  "0"
+      "8":  "0"
+      "9":  "0"
+      "10": "0"
+      "11": "0"
+      "12": "0"
+      "13": "0"
+      "14": "0"
+      "15": "0"
+      "16": "0"
+      "17": "0"
+      "18": "0"
+      "19": "0"
+      "20": "0"   
+      "21": "0"   
+      "22": "0"   
+      "23": "0"   
+      "24": "0"
+#    "3":
+#      "1":  "0"
+#      "2":  "1"
+#      "3":  "2"
+#      "4":  "0"
+#      "5":  "1"
+#      "6":  "2"
+#      "7":  "0"
+#      "8":  "1"
+#      "9":  "2"
+#      "10": "0"
+#      "11": "1"
+#      "12": "2"
+#      "13": "0"
+#      "14": "1"
+#      "15": "2"
+#      "16": "0"
+#      "17": "1"
+#      "18": "2"
+#      "19": "0"
+#      "20": "1"
+#      "21": "2"   
+#      "22": "0"   
+#      "23": "1"   
+#      "24": "2"       
+    "4":
+      "1":  "0"
+      "2":  "1"
+      "3":  "2"
+      "4":  "3"
+      "5":  "0"
+      "6":  "1"
+      "7":  "2"
+      "8":  "3"
+      "9":  "0"
+      "10": "1"
+      "11": "2"
+      "12": "3"
+      "13": "0"
+      "14": "1"
+      "15": "2"
+      "16": "3"
+      "17": "0"
+      "18": "1"
+      "19": "2"
+      "20": "3"
+      "21": "0"   
+      "22": "1"   
+      "23": "2"   
+      "24": "3"      
+    "5":
+      "1":  "0"
+      "2":  "1"
+      "3":  "2"
+      "4":  "3"
+      "5":  "4"
+      "6":  "0"
+      "7":  "1"
+      "8":  "2"
+      "9":  "3"
+      "10": "4"
+      "11": "0"
+      "12": "1"
+      "13": "2"
+      "14": "3"
+      "15": "4"
+      "16": "0"
+      "17": "1"
+      "18": "2"
+      "19": "3"
+      "20": "4"
+      "21": "0"   
+      "22": "1"   
+      "23": "2"   
+      "24": "3"      
+#    "6":
+#      "1":  "0"
+#      "2":  "1"
+#      "3":  "2"
+#      "4":  "3"
+#      "5":  "4"
+#      "6":  "5"
+#      "7":  "0"
+#      "8":  "1"
+#      "9":  "2"
+#      "10": "3"
+#      "11": "4"
+#      "12": "5"
+#      "13": "0"
+#      "14": "1"
+#      "15": "2"
+#      "16": "3"
+#      "17": "4"
+#      "18": "5"
+#      "19": "0"
+#      "20": "1"
+#      "21": "2"   
+#      "22": "3"   
+#      "23": "4"   
+#      "24": "5"
+ 
+Resources:
+  QumuloSecurityGroup:
+    Type: AWS::EC2::SecurityGroup   
+    Properties:
+      GroupDescription: Enable ports for NFS/SMB/FTP/SSH, Management, Replication, and Clustering.
+      VpcId: !Ref VPCId
+      SecurityGroupEgress:
+      - CidrIp: 0.0.0.0/0
+        Description: Outbound traffic
+        FromPort: 0
+        IpProtocol: "-1"
+        ToPort: 0
+      SecurityGroupIngress:
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for FTP
+        FromPort: 21
+        IpProtocol: tcp
+        ToPort: 21
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for SSH
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for HTTP
+        FromPort: 80
+        IpProtocol: tcp
+        ToPort: 80
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for SUNRPC
+        FromPort: 111
+        IpProtocol: tcp
+        ToPort: 111
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for HTTPS
+        FromPort: 443
+        IpProtocol: tcp
+        ToPort: 443
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for SMB
+        FromPort: 445
+        IpProtocol: tcp
+        ToPort: 445
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for NFS
+        FromPort: 2049
+        IpProtocol: tcp
+        ToPort: 2049
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for Replication
+        FromPort: 3712
+        IpProtocol: tcp
+        ToPort: 3712
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP ports for REST
+        FromPort: 8000
+        IpProtocol: tcp
+        ToPort: 8000
+      - CidrIp: !Ref QSgCidr1
+        Description: UDP port for SUNRPC
+        FromPort: 111
+        IpProtocol: udp
+        ToPort: 111
+      - CidrIp: !Ref QSgCidr1
+        Description: UDP port for NFS
+        FromPort: 2049
+        IpProtocol: udp
+        ToPort: 2049
+      - CidrIp: !Ref QSgCidr1
+        Description: TCP port for S3
+        FromPort: 9000
+        IpProtocol: TCP
+        ToPort: 9000
+
+  QumuloSecurityGroupNodeRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Qumulo Internode Communication
+      FromPort: 0
+      GroupId: !Ref QumuloSecurityGroup
+      IpProtocol: "-1"
+      SourceSecurityGroupId: !Ref QumuloSecurityGroup
+      ToPort: 0
+
+  QClusterGroup:
+    Type: AWS::EC2::PlacementGroup
+    Properties:
+      Strategy: !If [ProvMultiAZ, spread, cluster]
+
+  QClusterLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Ref AWS::StackName
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpEndpoint: enabled
+          HttpPutResponseHopLimit: 3
+          HttpTokens: !If [StrictIMDSv2, required, optional]
+
+  NODESTACK1:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        QNodeNumber: 1
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "1"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK2:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        QNodeNumber: 2
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "2"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK3:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        QNodeNumber: 3
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "3"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK4:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        QNodeNumber: 4
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "4"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK5:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision5
+    Properties:
+      Parameters:
+        QNodeNumber: 5
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "5"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK6:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision6
+    Properties:
+      Parameters:
+        QNodeNumber: 6
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "6"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+ 
+  NODESTACK7:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision7
+    Properties:
+      Parameters:
+        QNodeNumber: 7
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "7"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK8:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision8
+    Properties:
+      Parameters:
+        QNodeNumber: 8
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "8"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+ 
+  NODESTACK9:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision9
+    Properties:
+      Parameters:
+        QNodeNumber: 9
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "9"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK10:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision10
+    Properties:
+      Parameters:
+        QNodeNumber: 10
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "10"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK11:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision11
+    Properties:
+      Parameters:
+        QNodeNumber: 11
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "11"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+ 
+  NODESTACK12:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision12
+    Properties:
+      Parameters:
+        QNodeNumber: 12
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "12"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK13:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision13
+    Properties:
+      Parameters:
+        QNodeNumber: 13
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "13"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK14:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision14
+    Properties:
+      Parameters:
+        QNodeNumber: 14
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "14"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK15:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision15
+    Properties:
+      Parameters:
+        QNodeNumber: 15
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "15"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK16:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision16
+    Properties:
+      Parameters:
+        QNodeNumber: 16
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "16"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK17:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision17
+    Properties:
+      Parameters:
+        QNodeNumber: 17
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "17"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK18:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision18
+    Properties:
+      Parameters:
+        QNodeNumber: 18
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "18"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK19:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision19
+    Properties:
+      Parameters:
+        QNodeNumber: 19
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "19"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK20:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision20
+    Properties:
+      Parameters:
+        QNodeNumber: 20
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "20"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+ 
+  NODESTACK21:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision21
+    Properties:
+      Parameters:
+        QNodeNumber: 21
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "21"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK22:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision22
+    Properties:
+      Parameters:
+        QNodeNumber: 22
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "22"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK23:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision23
+    Properties:
+      Parameters:
+        QNodeNumber: 23
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "23"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+  NODESTACK24:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: Provision24
+    Properties:
+      Parameters:
+        QNodeNumber: 24
+        QAmiID: !Ref QAmiID
+        QClusterName: !Ref QClusterName
+        QFloatingIP: !Ref QFloatingIP
+        QInstanceIAMProfile: !Ref QInstanceIAMProfile
+        QInstanceRecoveryTopic: !Ref QInstanceRecoveryTopic
+        QInstanceType: !Ref QInstanceType
+        KeyPair: !Ref KeyPair
+        QSgId: !Ref QumuloSecurityGroup
+        QClusterGroup: !Ref QClusterGroup
+        QDiskConfig: !Ref QDiskConfig
+        QFlashType: !Ref QFlashType        
+        SubnetId: !Select [!FindInMap [AZforNode, !Ref NumberAZs, "24"], !Ref PrivateSubnetIDs]
+        VolumesEncryptionKey: !Ref VolumesEncryptionKey
+        QStackName: !Ref AWS::StackName
+      TemplateURL: !Sub "https://${BucketName}.s3.${BucketRegion}.${AWS::URLSuffix}/${KeyPrefix}templates/mp/cfn/qnode.cft.yaml"
+      TimeoutInMinutes: 150
+
+Outputs:
+
+  AWSStackID:
+    Description: AWS ARN for this stack
+    Value: !Ref AWS::StackId
+  ClusterNodeNames:
+    Description: List of name tags for the nodes in the cluster
+    Value: !Join
+      - ", "
+      - - !GetAtt NODESTACK1.Outputs.NodeName
+        - !GetAtt NODESTACK2.Outputs.NodeName
+        - !GetAtt NODESTACK3.Outputs.NodeName
+        - !GetAtt NODESTACK4.Outputs.NodeName
+        - !If [Provision5,  !GetAtt NODESTACK5.Outputs.NodeName,  !Ref AWS::NoValue]
+        - !If [Provision6,  !GetAtt NODESTACK6.Outputs.NodeName,  !Ref AWS::NoValue]
+        - !If [Provision7,  !GetAtt NODESTACK7.Outputs.NodeName,  !Ref AWS::NoValue]
+        - !If [Provision8,  !GetAtt NODESTACK8.Outputs.NodeName,  !Ref AWS::NoValue]
+        - !If [Provision9,  !GetAtt NODESTACK9.Outputs.NodeName,  !Ref AWS::NoValue]
+        - !If [Provision10, !GetAtt NODESTACK10.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision11, !GetAtt NODESTACK11.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision12, !GetAtt NODESTACK12.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision13, !GetAtt NODESTACK13.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision14, !GetAtt NODESTACK14.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision15, !GetAtt NODESTACK15.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision16, !GetAtt NODESTACK16.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision17, !GetAtt NODESTACK17.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision18, !GetAtt NODESTACK18.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision19, !GetAtt NODESTACK19.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision20, !GetAtt NODESTACK20.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision21, !GetAtt NODESTACK21.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision22, !GetAtt NODESTACK22.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision23, !GetAtt NODESTACK23.Outputs.NodeName, !Ref AWS::NoValue]
+        - !If [Provision24, !GetAtt NODESTACK24.Outputs.NodeName, !Ref AWS::NoValue]
+            
+  AWSStackName:
+    Description: AWS Name for this stack
+    Value: !Ref AWS::StackName
+  ClusterInstanceIDs:
+    Description: List of the instance IDs of the nodes in your Qumulo Cluster
+    Value: !Join
+      - ", "
+      - - !GetAtt NODESTACK1.Outputs.NodeInstanceID
+        - !GetAtt NODESTACK2.Outputs.NodeInstanceID
+        - !GetAtt NODESTACK3.Outputs.NodeInstanceID
+        - !GetAtt NODESTACK4.Outputs.NodeInstanceID
+        - !If [Provision5,  !GetAtt NODESTACK5.Outputs.NodeInstanceID,  !Ref AWS::NoValue]
+        - !If [Provision6,  !GetAtt NODESTACK6.Outputs.NodeInstanceID,  !Ref AWS::NoValue]
+        - !If [Provision7,  !GetAtt NODESTACK7.Outputs.NodeInstanceID,  !Ref AWS::NoValue]
+        - !If [Provision8,  !GetAtt NODESTACK8.Outputs.NodeInstanceID,  !Ref AWS::NoValue]
+        - !If [Provision9,  !GetAtt NODESTACK9.Outputs.NodeInstanceID,  !Ref AWS::NoValue]
+        - !If [Provision10, !GetAtt NODESTACK10.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision11, !GetAtt NODESTACK11.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision12, !GetAtt NODESTACK12.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision13, !GetAtt NODESTACK13.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision14, !GetAtt NODESTACK14.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision15, !GetAtt NODESTACK15.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision16, !GetAtt NODESTACK16.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision17, !GetAtt NODESTACK17.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision18, !GetAtt NODESTACK18.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision19, !GetAtt NODESTACK19.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision20, !GetAtt NODESTACK20.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision21, !GetAtt NODESTACK21.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision22, !GetAtt NODESTACK22.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision23, !GetAtt NODESTACK23.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+        - !If [Provision24, !GetAtt NODESTACK24.Outputs.NodeInstanceID, !Ref AWS::NoValue]
+
+  ClusterPlacementGroup:
+    Description: The placement group created for the cluster
+    Value: !Ref QClusterGroup
+
+  ClusterPrivateIPs:
+    Description: List of the primary private IPs of the nodes in your Qumulo Cluster
+    Value: !Join
+      - ", "
+      - - !GetAtt NODESTACK1.Outputs.NodePrivateIP
+        - !GetAtt NODESTACK2.Outputs.NodePrivateIP      
+        - !GetAtt NODESTACK3.Outputs.NodePrivateIP    
+        - !GetAtt NODESTACK4.Outputs.NodePrivateIP            
+        - !If [Provision5,  !GetAtt NODESTACK5.Outputs.NodePrivateIP,  !Ref AWS::NoValue]
+        - !If [Provision6,  !GetAtt NODESTACK6.Outputs.NodePrivateIP,  !Ref AWS::NoValue]
+        - !If [Provision7,  !GetAtt NODESTACK7.Outputs.NodePrivateIP,  !Ref AWS::NoValue]
+        - !If [Provision8,  !GetAtt NODESTACK8.Outputs.NodePrivateIP,  !Ref AWS::NoValue]
+        - !If [Provision9,  !GetAtt NODESTACK9.Outputs.NodePrivateIP,  !Ref AWS::NoValue]
+        - !If [Provision10, !GetAtt NODESTACK10.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision11, !GetAtt NODESTACK11.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision12, !GetAtt NODESTACK12.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision13, !GetAtt NODESTACK13.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision14, !GetAtt NODESTACK14.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision15, !GetAtt NODESTACK15.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision16, !GetAtt NODESTACK16.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision17, !GetAtt NODESTACK17.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision18, !GetAtt NODESTACK18.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision19, !GetAtt NODESTACK19.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision20, !GetAtt NODESTACK20.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision21, !GetAtt NODESTACK21.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision22, !GetAtt NODESTACK22.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision23, !GetAtt NODESTACK23.Outputs.NodePrivateIP, !Ref AWS::NoValue]
+        - !If [Provision24, !GetAtt NODESTACK24.Outputs.NodePrivateIP, !Ref AWS::NoValue]                        
+  ClusterSGID:
+    Description: The security group being used by the cluster network interfaces
+    Value: !Ref QumuloSecurityGroup
+
+  ClusterSecondaryPrivateIPs:
+    Condition: ProvFloatIP
+    Description: List of the secondary private IPs of the nodes in your Qumulo Cluster
+    Value: !Join
+      - ", "
+      - - !Join
+          - ", "
+          - - !GetAtt NODESTACK1.Outputs.NodeSecondaryPrivateIPs
+        - !Join
+          - ", "
+          - - !GetAtt NODESTACK2.Outputs.NodeSecondaryPrivateIPs
+        - !Join
+          - ", "
+          - - !GetAtt NODESTACK3.Outputs.NodeSecondaryPrivateIPs
+        - !Join
+          - ", "
+          - - !GetAtt NODESTACK4.Outputs.NodeSecondaryPrivateIPs
+        - !If
+          - Provision5
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK5.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision6
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK6.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision7
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK7.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision8
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK8.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision9
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK9.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision10
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK10.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision11
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK11.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision12
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK12.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision13
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK13.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision14
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK14.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision15
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK15.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision16
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK16.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision17
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK17.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision18
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK18.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision19
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK19.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision20
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK20.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision21
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK21.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision22
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK22.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision23
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK23.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue
+        - !If
+          - Provision24
+          - !Join
+            - ", "
+            - - !GetAtt NODESTACK24.Outputs.NodeSecondaryPrivateIPs
+          - !Ref AWS::NoValue     
+
+  FlashIOPS:
+    Description: gp3 Flash IOPS
+    Value: !GetAtt NODESTACK1.Outputs.FlashIOPS
+    
+  LinkToManagement:
+    Description: Use to launch the Qumulo Admin Console for Node 1
+    Value: !Join
+      - ''
+      - - https://
+        - !GetAtt NODESTACK1.Outputs.NodePrivateIP
+
+  QumuloKnowledgeBase:
+    Description: Knowledge Base for Qumulo in public clouds
+    Value: https://care.qumulo.com/hc/en-us/categories/115000637447-KNOWLEDGE-BASE
+
+  TemporaryPassword:
+    Description: Temporary admin password for your Qumulo cluster (exclude quotes, matches node1 instance ID).
+    Value: !Join
+      - ''
+      - - "\""
+        - !GetAtt NODESTACK1.Outputs.NodeInstanceID
+        - "\""

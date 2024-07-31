@@ -1,0 +1,695 @@
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [CloudQStack].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                      ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:51:07.962000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c  The following resource(s) failed to create: [CloudQStack].
+2024-07-25 16:51:07.519000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  CloudQStack                                                            Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQStack-1D72UWXOPOGV2/fbb6e700-4aa2-11ef-b92b-0ea764f12005 was not successfully created: The following resource(s) failed to create: [QSTACK].
+2024-07-25 16:28:54.322000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  CloudQStack                                                            Resource creation Initiated
+2024-07-25 16:28:53.603000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  CloudQStack
+2024-07-25 16:28:52.892000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack  AWSVPCSTACK
+2024-07-25 16:26:15.771000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  AWSVPCSTACK                                                            Resource creation Initiated
+2024-07-25 16:26:15.076000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  AWSVPCSTACK
+2024-07-25 16:26:11.900000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-AWSVPCSTACK-4V8OHJ8NRKWH
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                           LogicalResourceId                                                                               ResourceStatusReason
+--------------------------------  ------------------  -------------------------------------  ----------------------------------------------------------------------------------------------  ------------------------------------
+2024-07-25 16:28:52.303000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack             tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-AWSVPCSTACK-4V8OHJ8NRKWH
+2024-07-25 16:28:51.238000+00:00  CREATE_COMPLETE     AWS::EC2::Route                        NatRoute
+2024-07-25 16:28:50.926000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        NatRoute                                                                                        Resource creation Initiated
+2024-07-25 16:28:49.542000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        NatRoute
+2024-07-25 16:28:49.108000+00:00  CREATE_COMPLETE     AWS::EC2::NatGateway                   NatGateway
+2024-07-25 16:26:52.252000+00:00  CREATE_COMPLETE     AWS::EC2::EIP                          NatEIP
+2024-07-25 16:26:47.855000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NatGateway                   NatGateway                                                                                      Eventual consistency check initiated
+2024-07-25 16:26:44.608000+00:00  CREATE_COMPLETE     AWS::EC2::Route                        PublicRoute
+2024-07-25 16:26:44.295000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        PublicRoute                                                                                     Resource creation Initiated
+2024-07-25 16:26:43.164000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        PublicRoute
+2024-07-25 16:26:42.842000+00:00  CREATE_COMPLETE     AWS::EC2::RouteTable                   PrivateRouteTable
+2024-07-25 16:26:42.651000+00:00  CREATE_COMPLETE     AWS::EC2::RouteTable                   PublicRouteTable
+2024-07-25 16:26:38.744000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NatGateway                   NatGateway                                                                                      Resource creation Initiated
+2024-07-25 16:26:37.687000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NatGateway                   NatGateway
+2024-07-25 16:26:37.295000+00:00  CREATE_IN_PROGRESS  AWS::EC2::EIP                          NatEIP                                                                                          Eventual consistency check initiated
+2024-07-25 16:26:36.509000+00:00  CREATE_IN_PROGRESS  AWS::EC2::EIP                          NatEIP                                                                                          Resource creation Initiated
+2024-07-25 16:26:36.507000+00:00  CREATE_COMPLETE     AWS::EC2::VPCEndpoint                  S3Endpoint
+2024-07-25 16:26:36.199000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPCEndpoint                  S3Endpoint                                                                                      Resource creation Initiated
+2024-07-25 16:26:35.387000+00:00  CREATE_COMPLETE     AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation1
+2024-07-25 16:26:35.354000+00:00  CREATE_IN_PROGRESS  AWS::EC2::EIP                          NatEIP
+2024-07-25 16:26:35.192000+00:00  CREATE_COMPLETE     AWS::EC2::Subnet                       PublicSubnet2
+2024-07-25 16:26:35.127000+00:00  CREATE_COMPLETE     AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation2
+2024-07-25 16:26:35.095000+00:00  CREATE_COMPLETE     AWS::EC2::Subnet                       PrivateSubnet1
+2024-07-25 16:26:35.076000+00:00  CREATE_COMPLETE     AWS::EC2::Subnet                       PrivateSubnet2
+2024-07-25 16:26:35.053000+00:00  CREATE_COMPLETE     AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation1
+2024-07-25 16:26:35.009000+00:00  CREATE_COMPLETE     AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation2
+2024-07-25 16:26:35.005000+00:00  CREATE_COMPLETE     AWS::EC2::Subnet                       PublicSubnet1
+2024-07-25 16:26:34.888000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation1                                                             Resource creation Initiated
+2024-07-25 16:26:34.888000+00:00  CREATE_COMPLETE     AWS::EC2::InternetGateway              InternetGateway
+2024-07-25 16:26:34.814000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation2                                                              Resource creation Initiated
+2024-07-25 16:26:34.742000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation1                                                              Resource creation Initiated
+2024-07-25 16:26:34.644000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation2                                                             Resource creation Initiated
+2024-07-25 16:26:34.361000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroup                DefaultSg
+2024-07-25 16:26:34.045000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup                DefaultSg                                                                                       Resource creation Initiated
+2024-07-25 16:26:33.663000+00:00  CREATE_COMPLETE     AWS::EC2::VPCGatewayAttachment         VPCGatewayAttachment
+2024-07-25 16:26:33.562000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation1
+2024-07-25 16:26:33.541000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation2
+2024-07-25 16:26:33.522000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation1
+2024-07-25 16:26:33.418000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation2
+2024-07-25 16:26:33.286000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPCEndpoint                  S3Endpoint
+2024-07-25 16:26:33.166000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet2                                                                                   Eventual consistency check initiated
+2024-07-25 16:26:33.166000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet2                                                                                  Eventual consistency check initiated
+2024-07-25 16:26:33.165000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet1                                                                                  Eventual consistency check initiated
+2024-07-25 16:26:33.126000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet1                                                                                   Eventual consistency check initiated
+2024-07-25 16:26:33.002000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PrivateRouteTable                                                                               Eventual consistency check initiated
+2024-07-25 16:26:32.806000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PublicRouteTable                                                                                Eventual consistency check initiated
+2024-07-25 16:26:32.354000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet2                                                                                  Resource creation Initiated
+2024-07-25 16:26:32.319000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet1                                                                                  Resource creation Initiated
+2024-07-25 16:26:32.276000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PrivateRouteTable                                                                               Resource creation Initiated
+2024-07-25 16:26:32.261000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet2                                                                                   Resource creation Initiated
+2024-07-25 16:26:32.217000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet1                                                                                   Resource creation Initiated
+2024-07-25 16:26:32.035000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PublicRouteTable                                                                                Resource creation Initiated
+2024-07-25 16:26:31.898000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPCGatewayAttachment         VPCGatewayAttachment                                                                            Resource creation Initiated
+2024-07-25 16:26:31.164000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PrivateRouteTable
+2024-07-25 16:26:31.131000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet2
+2024-07-25 16:26:31.128000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet1
+2024-07-25 16:26:31.102000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup                DefaultSg
+2024-07-25 16:26:31.095000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PublicRouteTable
+2024-07-25 16:26:31.087000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet2
+2024-07-25 16:26:31.075000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPCGatewayAttachment         VPCGatewayAttachment
+2024-07-25 16:26:31.066000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet1
+2024-07-25 16:26:30.605000+00:00  CREATE_COMPLETE     AWS::EC2::VPC                          VPC
+2024-07-25 16:26:19.899000+00:00  CREATE_IN_PROGRESS  AWS::EC2::InternetGateway              InternetGateway                                                                                 Eventual consistency check initiated
+2024-07-25 16:26:19.671000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPC                          VPC                                                                                             Resource creation Initiated
+2024-07-25 16:26:19.194000+00:00  CREATE_IN_PROGRESS  AWS::EC2::InternetGateway              InternetGateway                                                                                 Resource creation Initiated
+2024-07-25 16:26:18.132000+00:00  CREATE_IN_PROGRESS  AWS::EC2::InternetGateway              InternetGateway
+2024-07-25 16:26:18.094000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPC                          VPC
+2024-07-25 16:26:15.615000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack             tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-AWSVPCSTACK-4V8OHJ8NRKWH  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQStack-1D72UWXOPOGV2
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QSTACK].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                ResourceStatusReason
+--------------------------------  ------------------  --------------------------  -----------------------------------------------------------------------------------------------  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:49:40.055000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQStack-1D72UWXOPOGV2  The following resource(s) failed to create: [QSTACK].
+2024-07-25 16:49:39.567000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  QSTACK                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT/5c425370-4aa3-11ef-9080-129bb25868fb was not successfully created: The following resource(s) failed to create: [NODESTACK1, NODESTACK4, NODESTACK2, NODESTACK3].
+2024-07-25 16:31:36.389000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  QSTACK                                                                                           Resource creation Initiated
+2024-07-25 16:31:35.579000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  QSTACK
+2024-07-25 16:31:34.999000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack  QIAMSTACK
+2024-07-25 16:29:08.254000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack  SECRETSSTACK
+2024-07-25 16:28:57.861000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  SECRETSSTACK                                                                                     Resource creation Initiated
+2024-07-25 16:28:57.721000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  QIAMSTACK                                                                                        Resource creation Initiated
+2024-07-25 16:28:57.054000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  SECRETSSTACK
+2024-07-25 16:28:57.042000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  QIAMSTACK
+2024-07-25 16:28:54.069000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQStack-1D72UWXOPOGV2  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Clo-SECRETSSTACK-D5KGGR0M80O4
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                 LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  ---------------------------  ---------------------------------------------------------------------------------------------------  ---------------------------
+2024-07-25 16:29:02.851000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack   tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Clo-SECRETSSTACK-D5KGGR0M80O4
+2024-07-25 16:29:01.607000+00:00  CREATE_COMPLETE     AWS::SecretsManager::Secret  SoftwareSecrets
+2024-07-25 16:29:01.578000+00:00  CREATE_COMPLETE     AWS::SecretsManager::Secret  SideCarSecrets
+2024-07-25 16:29:01.483000+00:00  CREATE_COMPLETE     AWS::SecretsManager::Secret  ClusterSecrets
+2024-07-25 16:29:01.261000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SoftwareSecrets                                                                                      Resource creation Initiated
+2024-07-25 16:29:01.132000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SideCarSecrets                                                                                       Resource creation Initiated
+2024-07-25 16:29:01.117000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  ClusterSecrets                                                                                       Resource creation Initiated
+2024-07-25 16:29:00.184000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SideCarSecrets
+2024-07-25 16:29:00.143000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  ClusterSecrets
+2024-07-25 16:29:00.102000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SoftwareSecrets
+2024-07-25 16:28:57.635000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack   tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Clo-SECRETSSTACK-D5KGGR0M80O4  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  ------------------------------------
+2024-07-25 16:31:30.004000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74
+2024-07-25 16:31:28.983000+00:00  CREATE_COMPLETE     AWS::IAM::InstanceProfile   QumuloAccessProfile
+2024-07-25 16:29:19.103000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74  Eventual consistency check initiated
+2024-07-25 16:29:19.067000+00:00  CREATE_IN_PROGRESS  AWS::IAM::InstanceProfile   QumuloAccessProfile                                                                                   Eventual consistency check initiated
+2024-07-25 16:29:18.434000+00:00  CREATE_IN_PROGRESS  AWS::IAM::InstanceProfile   QumuloAccessProfile                                                                                   Resource creation Initiated
+2024-07-25 16:29:17.583000+00:00  CREATE_IN_PROGRESS  AWS::IAM::InstanceProfile   QumuloAccessProfile
+2024-07-25 16:29:17.138000+00:00  CREATE_COMPLETE     AWS::IAM::Role              QumuloAccessRole
+2024-07-25 16:29:00.918000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role              QumuloAccessRole                                                                                      Resource creation Initiated
+2024-07-25 16:28:59.807000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role              QumuloAccessRole
+2024-07-25 16:28:57.591000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [NODESTACK1, NODESTACK4, NODESTACK2,
+NODESTACK3].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                    LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  ------------------------------  ---------------------------------------------------------------------------------------------------  ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:48:12.741000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT  The following resource(s) failed to create: [NODESTACK1, NODESTACK4, NODESTACK2, NODESTACK3].
+2024-07-25 16:48:12.289000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK2                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U/68e00050-4aa3-11ef-9b84-0afff608bd7f was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:48:12.185000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK4                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X/68b85410-4aa3-11ef-a32b-1269242ce225 was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:48:12.062000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK1                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R/68bd8430-4aa3-11ef-a656-120d1d628057 was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:48:11.758000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK3                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW/68c32980-4aa3-11ef-91b0-12d7d8f891b7 was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:31:57.523000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK2                                                                                           Resource creation Initiated
+2024-07-25 16:31:57.411000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK1                                                                                           Resource creation Initiated
+2024-07-25 16:31:57.315000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK3                                                                                           Resource creation Initiated
+2024-07-25 16:31:57.214000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK4                                                                                           Resource creation Initiated
+2024-07-25 16:31:56.564000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK3
+2024-07-25 16:31:56.557000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK2
+2024-07-25 16:31:56.517000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK1
+2024-07-25 16:31:56.480000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK4
+2024-07-25 16:31:55.932000+00:00  CREATE_COMPLETE     AWS::EC2::PlacementGroup        QClusterGroup
+2024-07-25 16:31:53.596000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupIngress  QumuloSecurityGroupNodeRule
+2024-07-25 16:31:53.238000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress  QumuloSecurityGroupNodeRule                                                                          Resource creation Initiated
+2024-07-25 16:31:52.231000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress  QumuloSecurityGroupNodeRule
+2024-07-25 16:31:51.501000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroup         QumuloSecurityGroup
+2024-07-25 16:31:43.767000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup         QumuloSecurityGroup                                                                                  Resource creation Initiated
+2024-07-25 16:31:41.396000+00:00  CREATE_COMPLETE     AWS::EC2::LaunchTemplate        QClusterLaunchTemplate
+2024-07-25 16:31:41.091000+00:00  CREATE_IN_PROGRESS  AWS::EC2::LaunchTemplate        QClusterLaunchTemplate                                                                               Resource creation Initiated
+2024-07-25 16:31:40.391000+00:00  CREATE_IN_PROGRESS  AWS::EC2::PlacementGroup        QClusterGroup                                                                                        Resource creation Initiated
+2024-07-25 16:31:39.518000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup         QumuloSecurityGroup
+2024-07-25 16:31:39.436000+00:00  CREATE_IN_PROGRESS  AWS::EC2::LaunchTemplate        QClusterLaunchTemplate
+2024-07-25 16:31:39.436000+00:00  CREATE_IN_PROGRESS  AWS::EC2::PlacementGroup        QClusterGroup
+2024-07-25 16:31:36.211000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.785000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.429000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 3616c5e3-a095-4714-8a03-7929a5e2d652)" (RequestToken: c01e07c0-f8cb-84d4-0afd-21a942e11662, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.598000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.700000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:02.159000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.524000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.294000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.665000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.186000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 6534032e-9c4d-4506-949f-0d6aceb8643e)" (RequestToken: a95091c8-7115-e5d1-69f5-ac6c0719dba9, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.175000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.361000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.698000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.249000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.110000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.710000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.318000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 0b26e716-ca59-428b-9219-ea9d63aac654)" (RequestToken: a494ddb2-4c09-34cb-99ac-db70f318137e, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.024000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.336000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.664000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.366000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.095000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:28.174000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.754000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 56cecc1c-cb18-4832-a70c-7d73182a634d)" (RequestToken: cb4f5c2a-e0b5-824e-34bc-0051c514849c, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.090000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.341000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.707000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.277000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.015000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.785000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.429000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 3616c5e3-a095-4714-8a03-7929a5e2d652)" (RequestToken: c01e07c0-f8cb-84d4-0afd-21a942e11662, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.598000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.700000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:02.159000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.524000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.294000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.665000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.186000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 6534032e-9c4d-4506-949f-0d6aceb8643e)" (RequestToken: a95091c8-7115-e5d1-69f5-ac6c0719dba9, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.175000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.361000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.698000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.249000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.110000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.710000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.318000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 0b26e716-ca59-428b-9219-ea9d63aac654)" (RequestToken: a494ddb2-4c09-34cb-99ac-db70f318137e, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.024000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.336000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.664000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.366000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.095000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:28.174000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.754000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 56cecc1c-cb18-4832-a70c-7d73182a634d)" (RequestToken: cb4f5c2a-e0b5-824e-34bc-0051c514849c, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.090000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.341000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.707000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.277000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.015000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Clo-SECRETSSTACK-D5KGGR0M80O4
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                 LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  ---------------------------  ---------------------------------------------------------------------------------------------------  ---------------------------
+2024-07-25 16:29:02.851000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack   tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Clo-SECRETSSTACK-D5KGGR0M80O4
+2024-07-25 16:29:01.607000+00:00  CREATE_COMPLETE     AWS::SecretsManager::Secret  SoftwareSecrets
+2024-07-25 16:29:01.578000+00:00  CREATE_COMPLETE     AWS::SecretsManager::Secret  SideCarSecrets
+2024-07-25 16:29:01.483000+00:00  CREATE_COMPLETE     AWS::SecretsManager::Secret  ClusterSecrets
+2024-07-25 16:29:01.261000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SoftwareSecrets                                                                                      Resource creation Initiated
+2024-07-25 16:29:01.132000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SideCarSecrets                                                                                       Resource creation Initiated
+2024-07-25 16:29:01.117000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  ClusterSecrets                                                                                       Resource creation Initiated
+2024-07-25 16:29:00.184000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SideCarSecrets
+2024-07-25 16:29:00.143000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  ClusterSecrets
+2024-07-25 16:29:00.102000+00:00  CREATE_IN_PROGRESS  AWS::SecretsManager::Secret  SoftwareSecrets
+2024-07-25 16:28:57.635000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack   tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Clo-SECRETSSTACK-D5KGGR0M80O4  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  ------------------------------------
+2024-07-25 16:31:30.004000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74
+2024-07-25 16:31:28.983000+00:00  CREATE_COMPLETE     AWS::IAM::InstanceProfile   QumuloAccessProfile
+2024-07-25 16:29:19.103000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74  Eventual consistency check initiated
+2024-07-25 16:29:19.067000+00:00  CREATE_IN_PROGRESS  AWS::IAM::InstanceProfile   QumuloAccessProfile                                                                                   Eventual consistency check initiated
+2024-07-25 16:29:18.434000+00:00  CREATE_IN_PROGRESS  AWS::IAM::InstanceProfile   QumuloAccessProfile                                                                                   Resource creation Initiated
+2024-07-25 16:29:17.583000+00:00  CREATE_IN_PROGRESS  AWS::IAM::InstanceProfile   QumuloAccessProfile
+2024-07-25 16:29:17.138000+00:00  CREATE_COMPLETE     AWS::IAM::Role              QumuloAccessRole
+2024-07-25 16:29:00.918000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role              QumuloAccessRole                                                                                      Resource creation Initiated
+2024-07-25 16:28:59.807000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role              QumuloAccessRole
+2024-07-25 16:28:57.591000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQ-QIAMSTACK-1VXXOEAEU7I74  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [NODESTACK1, NODESTACK4, NODESTACK2,
+NODESTACK3].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                    LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  ------------------------------  ---------------------------------------------------------------------------------------------------  ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:48:12.741000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT  The following resource(s) failed to create: [NODESTACK1, NODESTACK4, NODESTACK2, NODESTACK3].
+2024-07-25 16:48:12.289000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK2                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U/68e00050-4aa3-11ef-9b84-0afff608bd7f was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:48:12.185000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK4                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X/68b85410-4aa3-11ef-a32b-1269242ce225 was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:48:12.062000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK1                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R/68bd8430-4aa3-11ef-a656-120d1d628057 was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:48:11.758000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack      NODESTACK3                                                                                           Embedded stack arn:aws:cloudformation:us-east-1:037498179568:stack/tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW/68c32980-4aa3-11ef-91b0-12d7d8f891b7 was not successfully created: The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:31:57.523000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK2                                                                                           Resource creation Initiated
+2024-07-25 16:31:57.411000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK1                                                                                           Resource creation Initiated
+2024-07-25 16:31:57.315000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK3                                                                                           Resource creation Initiated
+2024-07-25 16:31:57.214000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK4                                                                                           Resource creation Initiated
+2024-07-25 16:31:56.564000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK3
+2024-07-25 16:31:56.557000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK2
+2024-07-25 16:31:56.517000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK1
+2024-07-25 16:31:56.480000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      NODESTACK4
+2024-07-25 16:31:55.932000+00:00  CREATE_COMPLETE     AWS::EC2::PlacementGroup        QClusterGroup
+2024-07-25 16:31:53.596000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupIngress  QumuloSecurityGroupNodeRule
+2024-07-25 16:31:53.238000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress  QumuloSecurityGroupNodeRule                                                                          Resource creation Initiated
+2024-07-25 16:31:52.231000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress  QumuloSecurityGroupNodeRule
+2024-07-25 16:31:51.501000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroup         QumuloSecurityGroup
+2024-07-25 16:31:43.767000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup         QumuloSecurityGroup                                                                                  Resource creation Initiated
+2024-07-25 16:31:41.396000+00:00  CREATE_COMPLETE     AWS::EC2::LaunchTemplate        QClusterLaunchTemplate
+2024-07-25 16:31:41.091000+00:00  CREATE_IN_PROGRESS  AWS::EC2::LaunchTemplate        QClusterLaunchTemplate                                                                               Resource creation Initiated
+2024-07-25 16:31:40.391000+00:00  CREATE_IN_PROGRESS  AWS::EC2::PlacementGroup        QClusterGroup                                                                                        Resource creation Initiated
+2024-07-25 16:31:39.518000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup         QumuloSecurityGroup
+2024-07-25 16:31:39.436000+00:00  CREATE_IN_PROGRESS  AWS::EC2::LaunchTemplate        QClusterLaunchTemplate
+2024-07-25 16:31:39.436000+00:00  CREATE_IN_PROGRESS  AWS::EC2::PlacementGroup        QClusterGroup
+2024-07-25 16:31:36.211000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-CloudQSta-QSTACK-TKKU1RYRDPOT  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.785000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.429000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 3616c5e3-a095-4714-8a03-7929a5e2d652)" (RequestToken: c01e07c0-f8cb-84d4-0afd-21a942e11662, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.598000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.700000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:02.159000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.524000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.294000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.665000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.186000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 6534032e-9c4d-4506-949f-0d6aceb8643e)" (RequestToken: a95091c8-7115-e5d1-69f5-ac6c0719dba9, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.175000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.361000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.698000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.249000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.110000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.710000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.318000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 0b26e716-ca59-428b-9219-ea9d63aac654)" (RequestToken: a494ddb2-4c09-34cb-99ac-db70f318137e, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.024000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.336000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.664000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.366000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.095000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:28.174000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.754000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 56cecc1c-cb18-4832-a70c-7d73182a634d)" (RequestToken: cb4f5c2a-e0b5-824e-34bc-0051c514849c, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.090000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.341000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.707000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.277000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.015000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.785000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.429000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 3616c5e3-a095-4714-8a03-7929a5e2d652)" (RequestToken: c01e07c0-f8cb-84d4-0afd-21a942e11662, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.598000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.700000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:02.159000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.524000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.294000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK2-PZNCZ75VQJ0U  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.665000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.186000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 6534032e-9c4d-4506-949f-0d6aceb8643e)" (RequestToken: a95091c8-7115-e5d1-69f5-ac6c0719dba9, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.175000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.361000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.698000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.249000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.110000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK1-1WQUXTC6BJ44R  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                    ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ---------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:27.710000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.318000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                           Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 0b26e716-ca59-428b-9219-ea9d63aac654)" (RequestToken: a494ddb2-4c09-34cb-99ac-db70f318137e, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.024000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.336000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.664000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                            Resource creation Initiated
+2024-07-25 16:32:00.366000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.095000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK3-DQ9BKT0G43KW  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X
+*****************************************************************************
+ResourceStatusReason:  
+The following resource(s) failed to create: [QumuloNode].
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                LogicalResourceId                                                                                     ResourceStatusReason
+--------------------------------  ------------------  --------------------------  ----------------------------------------------------------------------------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2024-07-25 16:47:28.174000+00:00  CREATE_FAILED       AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  The following resource(s) failed to create: [QumuloNode].
+2024-07-25 16:47:27.754000+00:00  CREATE_FAILED       AWS::EC2::Instance          QumuloNode                                                                                            Resource handler returned message: "In order to use this AWS Marketplace product you need to accept terms and subscribe. To do so please visit https://aws.amazon.com/marketplace/pp?sku=3vsx6dadm84bqt0e918uybnit (Service: Ec2, Status Code: 401, Request ID: 56cecc1c-cb18-4832-a70c-7d73182a634d)" (RequestToken: cb4f5c2a-e0b5-824e-34bc-0051c514849c, HandlerErrorCode: AccessDenied)
+2024-07-25 16:32:13.090000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance          QumuloNode
+2024-07-25 16:32:12.341000+00:00  CREATE_COMPLETE     AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:32:01.707000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni                                                                                             Resource creation Initiated
+2024-07-25 16:32:00.277000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NetworkInterface  QumuloEni
+2024-07-25 16:31:57.015000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack  tCaT-cfn-ps-qumulo-cloud-q-qumulo-mp-dbd552aea55b40e2956536ae851e7a6c-Cloud-NODESTACK4-1L9HAZSUF004X  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Thursday, 25. July 2024 11:51AM
+-----------------------------------------------------------------------------
+
