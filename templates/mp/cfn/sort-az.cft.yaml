@@ -1,0 +1,204 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lookup AZs from Subnet IDs and Sort AZs by name returning correctly ordered Subnet IDs. Also validates if node failures need to change from 1 to 2. (qs-1t69bpbtl)
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W9001
+        - W9002
+        - W9003
+        - W9004
+        - W9006
+Parameters:
+  PrivateSubnetIdList:
+    Type: CommaDelimitedList
+  PublicSubnetIdList:
+    Type: CommaDelimitedList
+  NumberAZs:
+    Type: String
+  QNodesPerAZ:
+    Type: String
+  QPublicMgmt:
+    Type: String
+  TopStackName:
+    Type: String
+Conditions:
+  ProvMgmt:
+    Fn::Not:
+      - Fn::Equals:
+          - Ref: QPublicMgmt
+          - 'NO'
+Resources:
+  CreationNumberAZsSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name:
+        Fn::Sub: /qumulo/${TopStackName}/creation-number-AZs
+      Value: 'null'
+      Type: String
+  MaxNodesDownSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name:
+        Fn::Sub: /qumulo/${TopStackName}/max-nodes-down
+      Value: 'null'
+      Type: String
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  Fn::Sub: arn:${AWS::Partition}:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeSubnets
+                  - ssm:ListInstanceAssociations
+                  - ssm:GetParameter
+                  - ssm:UpdateInstanceInformation
+                Resource: '*'
+  SortByAZLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Sort AZs by name to get correctly ordered subnet list
+      Handler: index.handler
+      MemorySize: 128
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Runtime: python3.9
+      Timeout: 30
+      Code:
+        ZipFile: "import json\nimport boto3\nimport cfnresponse      \nimport logging\n \ndef handler(event, context):\n  logger = logging.getLogger()\n  logger.setLevel(logging.INFO)\n          \n  response_data\
+          \ = {}\n  response_status = cfnresponse.FAILED\n  \n  logger.info('Received event: {}'.format(json.dumps(event)))\n  \n  if event['RequestType'] == 'Delete':\n    response_status = cfnresponse.SUCCESS\n\
+          \    cfnresponse.send(event, context, response_status, response_data)\n\n  try:\n    ec2=boto3.client('ec2')\n    ssm=boto3.client('ssm')\n  except Exception as e:\n    logger.info('boto3.client\
+          \ failure: {}'.format(e))\n    cfnresponse.send(event, context, response_status, response_data)\n  \n  stack_name = event['ResourceProperties']['StackName']\n  subnetid_list = event['ResourceProperties']['SubnetIdList']\n\
+          \  number_of_azs = event['ResourceProperties']['NumberAZs']\n  nodes_per_az = event['ResourceProperties']['NodesPerAZ']\n  public_mgmt = event['ResourceProperties']['PublicMgmt']\n  region = event['ResourceProperties']['Region']\
+          \            \n  \n  if region == \"us-west-2\" or region == \"us-east-1\" or region == \"ap-northeast-2\":\n    logger.info('Valid Multi-AZ Region for Qumulo Cluster. Region= {}'.format(region))\n\
+          \  else:\n      try:\n        raise ValueError\n      except ValueError:\n        logger.info('Region is not a valid Multi-AZ region, 4 or more AZs are required.  Region='+region)\n        cfnresponse.send(event,\
+          \ context, response_status, response_data)\n        raise\n                    \n  if public_mgmt == \"NO\":\n    try:\n      param_max_nodes_down = ssm.get_parameter(Name='/qumulo/'+stack_name+'/max-nodes-down',\
+          \ WithDecryption=True)\n    except Exception as e:\n      logger.info('ssm.get_parameter(Name=/qumulo/+stack_name+/max-nodes-down {}'.format(e))\n      cfnresponse.send(event, context, response_status,\
+          \ response_data)\n\n    max_nodes_down = param_max_nodes_down['Parameter']['Value']\n    if max_nodes_down == \"null\" or nodes_per_az == max_nodes_down:\n      mod_overness=\"NO\"\n    elif max_nodes_down\
+          \ == \"1\" and nodes_per_az == \"2\":\n      mod_overness=\"YES\"\n    else:\n      try:\n        raise ValueError\n      except ValueError:\n        logger.info('Can not change cluster layout\
+          \ from '+max_nodes_down+' nodes per AZ to '+nodes_per_az+' nodes per AZ.  Redeploy with the desired nodes per AZ.')\n        cfnresponse.send(event, context, response_status, response_data)\n\
+          \        raise\n    \n    response_data['ModOverness'] = mod_overness\n    logger.info('nodes per AZ {}'.format(nodes_per_az))                 \n    logger.info('max nodes down {}'.format(max_nodes_down))\
+          \                 \n    logger.info('modify overness {}'.format(mod_overness))                           \n\n  try:\n    subnets = ec2.describe_subnets(SubnetIds=subnetid_list)\n  except Exception\
+          \ as e:\n    logger.info('ec2.describe_subnets failure: {}'.format(e))\n    cfnresponse.send(event, context, response_status, response_data)\n\n  number_of_subnets = len(subnets['Subnets'])\n\
+          \  logger.info('number of subnets returned: {}'.format(number_of_subnets))\n\n  if number_of_subnets >= 4 and int(number_of_azs) == number_of_subnets:\n  \n    subnets_info=subnets.get('Subnets')\n\
+          \    \n    ids = [subid.get('SubnetId') for subid in subnets_info]\n    azs = [az.get('AvailabilityZone') for az in subnets_info]\n\n    id_az = [[ids[i], azs[i]] for i in range(number_of_subnets)]\n\
+          \    id_az.sort(key=lambda row: (row[1]))   \n    azs_sorted = [id_az[i][1] for i in range(number_of_subnets)]\n    subnets_sorted = [id_az[i][0] for i in range(number_of_subnets)]\n\n    unique_azs\
+          \ = []\n    for z in azs_sorted:\n      if z not in unique_azs:\n        unique_azs.append(z)\n\n    number_of_unique_azs = len(unique_azs)\n\n    if number_of_unique_azs == number_of_subnets:\n\
+          \n      response_data['AvailabilityZones'] = ','.join(azs_sorted)\n      response_data['SubnetIds'] = ','.join(subnets_sorted)\n      response_data['NumberUniqueAZs'] = number_of_unique_azs\n\n\
+          \      logger.info('sorted {}'.format(id_az))\n      logger.info('sorted az list {}'.format(azs_sorted))\n      logger.info('sorted to match azs subnet list {}'.format(subnets_sorted))\n     \
+          \ logger.info('number of unique AZs {}'.format(number_of_unique_azs))\n\n    else:\n      logger.info('sorted {}'.format(id_az))\n      logger.info('sorted az list {}'.format(azs_sorted))\n  \
+          \    logger.info('sorted to match azs subnet list {}'.format(subnets_sorted))          \n      logger.info('Number of unique AZs does not match the number of subnets provided.  Number of unique\
+          \ azs is: {}'.format(number_of_unique_azs))\n      cfnresponse.send(event, context, response_status, response_data)\n\n    response_status = cfnresponse.SUCCESS\n    cfnresponse.send(event, context,\
+          \ response_status, response_data)\n                \n  else:\n    logger.info('3 or more subnets in unique AZs are required, subnet ids are {}'.format(subnetid_list))\n    logger.info('number\
+          \ of AZs must match number of subnets, Number of AZs requested are {}'.format(number_of_azs))              \n    cfnresponse.send(event, context, response_status, response_data)\n"
+  PrivateSortByAZ:
+    Type: Custom::PrivateSortByAZ
+    Properties:
+      NodesPerAZ:
+        Ref: QNodesPerAZ
+      NumberAZs:
+        Ref: NumberAZs
+      PublicMgmt: 'NO'
+      ServiceToken:
+        Fn::GetAtt:
+          - SortByAZLambda
+          - Arn
+      StackName:
+        Ref: TopStackName
+      SubnetIdList:
+        Ref: PrivateSubnetIdList
+      Region:
+        Ref: AWS::Region
+  PublicSortByAZ:
+    Type: Custom::PublicSortByAZ
+    Condition: ProvMgmt
+    Properties:
+      NodesPerAZ:
+        Ref: QNodesPerAZ
+      NumberAZs:
+        Ref: NumberAZs
+      PublicMgmt: 'YES'
+      ServiceToken:
+        Fn::GetAtt:
+          - SortByAZLambda
+          - Arn
+      StackName:
+        Ref: TopStackName
+      SubnetIdList:
+        Ref: PublicSubnetIdList
+      Region:
+        Ref: AWS::Region
+Outputs:
+  ModOverness:
+    Description: Increase Node Protection when growing from 1 to 2 nodes per AZ
+    Value:
+      Fn::GetAtt:
+        - PrivateSortByAZ
+        - ModOverness
+  PrivateAvailabilityZones:
+    Description: Private Sorted AvailabilityZones
+    Value:
+      Fn::GetAtt:
+        - PrivateSortByAZ
+        - AvailabilityZones
+  PrivateSubnetIds:
+    Description: Private Subnet IDs for Sorted AZs
+    Value:
+      Fn::GetAtt:
+        - PrivateSortByAZ
+        - SubnetIds
+  PrivateUniqueAZs:
+    Description: Number of Unique Private AZs
+    Value:
+      Fn::GetAtt:
+        - PrivateSortByAZ
+        - NumberUniqueAZs
+  PublicAvailabilityZones:
+    Condition: ProvMgmt
+    Description: Public Sorted AvailabilityZones
+    Value:
+      Fn::GetAtt:
+        - PublicSortByAZ
+        - AvailabilityZones
+  PublicSubnetIds:
+    Condition: ProvMgmt
+    Description: Public Subnet IDs for Sorted AZs
+    Value:
+      Fn::GetAtt:
+        - PublicSortByAZ
+        - SubnetIds
+  PublicUniqueAZs:
+    Condition: ProvMgmt
+    Description: Number of Unique Public AZs
+    Value:
+      Fn::GetAtt:
+        - PublicSortByAZ
+        - NumberUniqueAZs
